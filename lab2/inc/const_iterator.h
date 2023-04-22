@@ -20,12 +20,12 @@ public:
     // конструктор копирования, идентичен конструктору копирования по умолчанию
     ConstIterator(const Iterator &iterator) = default;
 
-    bool operator!=(ConstIterator const &other) const { return _index != other._index }; // переопределение !=
+    bool operator!=(ConstIterator const &other) const { return _index != other._index; } // переопределение !=
 
-    bool operator==(ConstIterator const &other) const { return _index == other._index }; // переопределение ==
+    bool operator==(ConstIterator const &other) const { return _index == other._index; } // переопределение ==
 
     ConstIterator<T> operator+(const int value) const { // переопределили +
-        Iterator <T> iterator(*this)
+        Iterator <T> iterator(*this);
 
         if (value < 0 && iterator._index < static_cast<size_t>(-value))
             iterator._index = 0;
@@ -35,17 +35,17 @@ public:
         if (iterator._index > _rows * _cols)
             iterator._index = _rows * _cols;
 
-        return iterator
+        return iterator;
     }
 
     ConstIterator<T> operator-(const int value) const { // переопределили -
-        return operator+(-value)
+        return operator+(-value);
     }
 
     ConstIterator<T> &operator+=(const int value) const { // переопределили +=
         _index += value;
 
-        return *this
+        return *this;
     }
 
     ConstIterator<T> &operator-=(const int value) const { // переопределили -=
@@ -59,15 +59,15 @@ public:
         if (_index < _rows * _cols)
             ++_index;
 
-        return iterator
+        return *this;
     }
 
     ConstIterator<T> &operator++(int) const { // перегрузили постфиксный инкремент
         Iterator <T> iterator(*this);
 
-        ++(*this)
+        ++(*this);
 
-        return iterator
+        return iterator;
     }
 
     ConstIterator<T> &operator--() const { // перегрузили префиксный декремент
@@ -75,15 +75,15 @@ public:
         if (_index > 0)
             --_index;
 
-        return iterator
+        return *this;
     }
 
     ConstIterator<T> &operator--(int) const { // перегрузили постфиксный декремент
         Iterator <T> iterator(*this);
 
-        --(*this)
+        --(*this);
 
-        return iterator
+        return iterator;
     }
 
     const T &operator*() const {
@@ -92,7 +92,7 @@ public:
 
         std::shared_ptr <T> ptr = _data.lock();
 
-        return *(ptr.get() + _index)
+        return *(ptr.get() + _index);
     }
 
     const T *operator->() const {
@@ -101,17 +101,17 @@ public:
 
         std::shared_ptr <T> ptr = _data.lock();
 
-        return ptr.get() + _index
+        return ptr.get() + _index;
     }
 
 
-    operator bool() const { return _data.expired() }
+    operator bool() const { return _data.expired(); }
 
     bool is_valid() const { return !_data.expired(); }
 
-    bool is_end() const { return _index == _rows * _cols };
+    bool is_end() const { return _index == _rows * _cols; }
 
-    Iterator <T> &next() const { return operator++() }
+    Iterator <T> &next() const { return operator++(); }
 
 private:
     // метод для проверки индекса
@@ -142,11 +142,12 @@ private:
                                  __FILE__,
                                  typeid(*this).name(),
                                  __LINE__, hint);
+
     }
 
     // данные, по которым идет итерация
     std::weak_ptr <T> _data = nullptr;
-
+    --
     size_t _index = 0;
     size_t _rows = 0;
     size_t _cols = 0;
