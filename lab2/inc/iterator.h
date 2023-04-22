@@ -14,8 +14,9 @@ class Iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 public:
     // конструктор класса
     Iterator(const Matrix<T> &matrix, const size_t index = 0) :
-            _data()
-            _index(index), _rows(matrix._rows), _cols(matrix._cols) {};
+            _data(matrix._data),
+            _index(index), _rows(matrix._rows),
+            _cols(matrix._cols) {};
 
     // конструктор копирования, идентичен конструктору копирования по умолчанию
     Iterator(const Iterator &iterator) = default;
@@ -96,10 +97,52 @@ public:
     }
 
     T &operator*() {
+        _check_valid("Iterator points on nullptr");
+        _check_index("Iterator doesn't in data bounds, while executing const operator*");
 
+        std::shared_ptr <T> ptr = _data.lock();
+
+        return *(ptr.get() + _index)
     }
 
+    const T &operator*() const {
+        _check_valid("Iterator points on nullptr");
+        _check_index("Iterator doesn't in data bounds, while executing const operator*");
+
+        std::shared_ptr <T> ptr = _data.lock();
+
+        return *(ptr.get() + _index)
+    }
+
+    T *operator->() {
+        _check_valid("Iterator points on nullptr");
+        _check_index("Iterator doesn't in data bounds, while executing const operator*");
+
+        std::shared_ptr <T> ptr = _data.lock();
+
+        return elem;
+    }
+
+    const T *operator->() const {
+        _check_valid("Iterator points on nullptr");
+        _check_index("Iterator doesn't in data bounds, while executing const operator*");
+
+        std::shared_ptr <T> ptr = _data.lock();
+
+        return ptr.get() + _index
+    }
+
+
+    operator bool() const { return _data.expired() }
+
+    bool is_valid() const { return !_data.expired(); }
+
+    bool is_end() const { return _index == _rows * _cols };
+
+    Iterator<T> &next() { return operator++() }
+
 private:
+    // метод для проверки индекса
     void _check_index(const string hint = "") const {
         if (_index < _rows * _cols)
             return;
@@ -115,10 +158,22 @@ private:
                                  __LINE__, hint);
     }
 
+    // метод для проверки данных на валидность
     void _check_valid(const string hint = "") const {
-        if (!is_valid())
+        if (is_valid())
+            return;
+
+        time_t cur_time = time(NULL);
+        auto local_time = localtime(&cur_time);
+
+        throw IteratorValidError(asctime(local_time),
+                                 __FILE__,
+                                 typeid(*this).name(),
+                                 __LINE__, hint);
     }
 
+    // данные, по которым идет итерация
+    std::weak_ptr <T> _data = nullptr;
 
     size_t _index = 0;
     size_t _rows = 0;

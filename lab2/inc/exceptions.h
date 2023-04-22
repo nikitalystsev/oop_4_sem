@@ -59,3 +59,12 @@ public:
         _err_msg += " (error type: Iterator Index Error)";
     }
 };
+
+class IteratorValidError : public MatrixExceptions {
+public:
+    IteratorValidationError(const string time_info, const string file_info, string class_name, const int line_info,
+                            const string err_msg = "No error message") :
+            MatrixExceptions(time_info, file_info, class_name, line_info, err_msg) {
+        _err_msg += " (error type: Iterator Validation Error)";
+    }
+};
