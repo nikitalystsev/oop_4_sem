@@ -18,6 +18,16 @@ public:
     // деструктор класса
     virtual ~MatrixExceptions() {};
 
+    virtual const char *what() const
+
+//    Ключевое слово override указывает компилятору,
+//    что данная функция должна переопределять виртуальную функцию
+//    из базового класса.
+    noexcept override
+            {
+                    return _err_msg.c_str();
+            };
+
 protected:
     string _err_msg;
 };
@@ -37,6 +47,6 @@ public:
     MemoryError(const string time_info, const string file_info, string class_name, const int line_info,
                 const string err_msg = "No error message") :
             MatrixExceptions(time_info, file_info, class_name, line_info, err_msg) {
-        _errmsg += " (error type: Memory Error)";
+        _err_msg += " (error type: Memory Error)";
     }
 };
