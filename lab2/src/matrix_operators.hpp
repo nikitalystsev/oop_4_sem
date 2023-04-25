@@ -188,16 +188,6 @@ Matrix<T> &Matrix<T>::operator*=(const Matrix &matrix)
 
 template <typename T>
 template <typename T2>
-// деление 2-х матриц
-decltype(auto) Matrix<T>::operator/(const Matrix<T2> &matrix) const
-{
-    Matrix<decltype((*this)[0][0] / matrix[0][0])> tmp(matrix);
-    tmp.inverse();
-    return operator*(tmp);
-}
-
-template <typename T>
-template <typename T2>
 // деление матрицы на число
 decltype(auto) Matrix<T>::operator/(const T2 &elem) const
 {
@@ -231,15 +221,6 @@ Matrix<T> &Matrix<T>::operator/=(const T &elem)
         for (size_t j = 0; j < _cols; ++j)
             _data[i][j] /= elem;
 
-    return *this;
-}
-
-template <typename T>
-// деление 2-х матриц
-Matrix<T> &Matrix<T>::operator/=(const Matrix &matrix)
-{
-    Matrix<T> tmp = operator/(matrix);
-    *this = tmp;
     return *this;
 }
 

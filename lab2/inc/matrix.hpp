@@ -60,11 +60,8 @@ public:
     Matrix<T> &operator*=(const Matrix &matrix);
 
     template <typename T2>
-    decltype(auto) operator/(const Matrix<T2> &matrix) const;
-    template <typename T2>
     decltype(auto) operator/(const T2 &elem) const;
     Matrix<T> &operator/=(const T &elem);
-    Matrix<T> &operator/=(const Matrix &matrix);
 
     T determinant() const; // определитель матрицы
     void transpose(); // транспонирование матрицы

@@ -3,6 +3,7 @@ T &Matrix<T>::MatrixRow::operator[](size_t index) {
     if (index >= _size) {
         time_t cur_time = time(NULL);
         auto local_time = localtime(&cur_time);
+
         throw IndexError(asctime(local_time), __FILE__, typeid(*this).name(), __LINE__, "Incorrect column");
     }
 
@@ -14,6 +15,7 @@ const T &Matrix<T>::MatrixRow::operator[](size_t index) const {
     if (index >= _size) {
         time_t cur_time = time(NULL);
         auto local_time = localtime(&cur_time);
+
         throw IndexError(asctime(local_time), __FILE__, typeid(*this).name(), __LINE__, "Incorrect column");
     }
 
