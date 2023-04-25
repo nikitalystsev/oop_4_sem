@@ -92,6 +92,7 @@ template<typename T>
 // переопределили оператор bool
 ConstIterator<T>::operator bool() const {
 
+    // true, если управляемый объект уже удален
     return _data.expired();
 }
 
