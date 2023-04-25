@@ -45,14 +45,12 @@ public:
     Matrix<T> &operator+=(const T &elem) noexcept;
     Matrix<T> &operator+=(const Matrix &matrix);
 
-
     template <typename T2>
     decltype(auto) operator-(const Matrix<T2> &matrix) const;
     template <typename T2>
     decltype(auto) operator-(const T2 &elem) const noexcept;
     Matrix<T> &operator-=(const T &elem) noexcept;
     Matrix<T> &operator-=(const Matrix &matrix);
-
 
     template <typename T2>
     decltype(auto) operator*(const Matrix<T2> &matrix) const;
@@ -61,7 +59,6 @@ public:
     Matrix<T> &operator*=(const T &elem) noexcept;
     Matrix<T> &operator*=(const Matrix &matrix);
 
-
     template <typename T2>
     decltype(auto) operator/(const Matrix<T2> &matrix) const;
     template <typename T2>
@@ -69,14 +66,11 @@ public:
     Matrix<T> &operator/=(const T &elem);
     Matrix<T> &operator/=(const Matrix &matrix);
 
-    //-Matrix
-    Matrix<T> operator-();
-
-    T determinant() const;
-    void transpose();
+    T determinant() const; // определитель матрицы
+    void transpose(); // транспонирование матрицы
     void inverse(); // обратная матрица
-    bool is_square() const;
-    void fill(Iterator<T> start, const Iterator<T> &end, const T &value);
+    bool is_square() const; // квадратная ли матрица
+    void fill(Iterator<T> start, const Iterator<T> &end, const T &value); // заполнение матрицы значениями
 
     ConstIterator<T> begin() const;
     ConstIterator<T> end() const;

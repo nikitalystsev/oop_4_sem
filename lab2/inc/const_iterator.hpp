@@ -17,7 +17,7 @@ template<typename T>
 class ConstIterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 public:
     // конструктор класса
-    ConstIterator(const Matrix<Type> &matrix, const size_t index = 0) :
+    ConstIterator(const Matrix<T> &matrix, const size_t index = 0) :
             _data(matrix._data), _index(index),
             _rows(matrix._rows), _cols(matrix._cols) {}
 

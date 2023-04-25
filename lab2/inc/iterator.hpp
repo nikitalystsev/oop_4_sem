@@ -15,7 +15,7 @@ class Matrix;
 template<typename T>
 class Iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 public:
-    Iterator(const Matrix<Type> &matrix, const size_t index = 0) :
+    Iterator(const Matrix<T> &matrix, const size_t index = 0) :
             _data(matrix._data), _index(index),
             _rows(matrix._rows), _cols(matrix._cols) {}
 
@@ -35,7 +35,7 @@ public:
 
     Iterator<T> &operator+=(const int value);
 
-    Iterator<T> &operator=(const Iterator<Type> &it);
+    Iterator<T> &operator=(const Iterator<T> &it);
 
     Iterator<T> &operator++();
 
