@@ -195,6 +195,7 @@ decltype(auto) Matrix<T>::operator/(const T2 &elem) const
     {
         time_t cur_time = time(NULL);
         auto local_time = localtime(&cur_time);
+
         throw InvalidArgument(asctime(local_time), __FILE__, typeid(*this).name(), __LINE__, "Zero divisor");
     }
 
@@ -214,6 +215,7 @@ Matrix<T> &Matrix<T>::operator/=(const T &elem)
     {
         time_t cur_time = time(NULL);
         auto local_time = localtime(&cur_time);
+
         throw InvalidArgument(asctime(local_time), __FILE__, typeid(*this).name(), __LINE__, "Zero divisor");
     }
 
@@ -236,17 +238,7 @@ const typename Matrix<T>::MatrixRow Matrix<T>::operator[](size_t row) const
     return _data[row];
 }
 
-template <typename T>
-T &Matrix<T>::operator()(size_t row, size_t col)
-{
-    return _data[row][col];
-}
 
-template <typename T>
-const T &Matrix<T>::operator()(size_t row, size_t col) const
-{
-    return _data[row][col];
-}
 
 template <typename T>
 // вывод матрицы на экран

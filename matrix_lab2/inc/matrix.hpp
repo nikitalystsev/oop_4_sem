@@ -28,7 +28,7 @@ public:
     Matrix(const Matrix &matrix);
     Matrix(Matrix &&matrix);
 
-    virtual ~Matrix() = default;explicit
+    virtual ~Matrix() = default;
 
     // операции над матрицами
     bool operator==(const Matrix& matrix) const;
@@ -82,21 +82,14 @@ public:
     T &get_elem(size_t row, size_t col);
     const T &get_elem(size_t row, size_t col) const;
 
-    T &operator()(size_t row, size_t col);
-    const T &operator()(size_t row, size_t col) const;
-
-
 private:
     SharedPtr<MatrixRow[]> _data { nullptr };
     SharedPtr<MatrixRow[]> _mem_alloc(size_t rows, size_t cols);
-    void _move_row(size_t from, size_t to);
-    void _move_col(size_t from, size_t to);
     void _check_index(size_t pos, size_t limit) const;
     void _check_sizes(const Matrix &matrix) const;
     void _check_mult_sizes(const Matrix &matrix) const;
 
 public:
-    // подкласс матрицы строки
     class MatrixRow 
     {
         friend Iterator<T>;
@@ -114,7 +107,6 @@ public:
         size_t _size = 0;
         T *getAddr() { return _data.get(); };
         const T *getAddr() const { return _data.get(); };
-    
     };
 
 };

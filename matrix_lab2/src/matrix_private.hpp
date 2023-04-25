@@ -1,28 +1,4 @@
 template<typename T>
-void Matrix<T>::_move_row(size_t from, size_t to) {
-    auto tmp = _data[from];
-
-    for (size_t i = from; i > to; --i)
-        _data[i] = _data[i - 1];
-    for (size_t i = from; i < to; ++i)
-        _data[i] = _data[i + 1];
-
-    _data[to] = tmp;
-}
-
-template<typename T>
-void Matrix<T>::_move_col(size_t from, size_t to) {
-    for (size_t j = 0; j < _rows; ++j) {
-        auto tmp = _data[j][from];
-        for (size_t i = from; i > to; --i)
-            _data[j][i] = _data[j][i - 1];
-        for (size_t i = from; i < to; ++i)
-            _data[j][i] = _data[j][i + 1];
-        _data[j][to] = tmp;
-    }
-}
-
-template<typename T>
 void Matrix<T>::_check_sizes(const Matrix <T> &matrix) const {
     if (_rows != matrix._rows || _cols != matrix._cols) {
         time_t cur_time = time(NULL);
