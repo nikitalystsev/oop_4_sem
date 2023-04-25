@@ -20,15 +20,15 @@ public:
     friend ConstIterator<T>;
 
 public:
-    explicit Matrix(size_t rows = 0, size_t columns = 0);
+    Matrix(size_t rows = 0, size_t columns = 0);
     Matrix(size_t rows, size_t columns, const T &filler);
     
     Matrix(size_t rows, size_t columns, T **matrix);
     Matrix(std::initializer_list<std::initializer_list<T> > init_list);
-    explicit Matrix(const Matrix &matrix);
+    Matrix(const Matrix &matrix);
     Matrix(Matrix &&matrix);
 
-    virtual ~Matrix() = default;
+    virtual ~Matrix() = default;explicit
 
     // операции над матрицами
     bool operator==(const Matrix& matrix) const;
