@@ -1,13 +1,15 @@
 template<typename T>
 // метод исключающий строку или столбец
-static void _excludeCopy(Matrix <T> &target, const Matrix <T> &source, size_t ex_row, size_t ex_col) {
+static void _exclude_сopy(Matrix <T> &target, const Matrix <T> &source, size_t ex_row, size_t ex_col) {
     if (target.get_rows() != source.get_rows() - 1 || target.get_columns() != source.get_columns() - 1) {
         time_t cur_time = time(NULL);
         auto local_time = localtime(&cur_time);
+
         throw IncompatibleElements(asctime(local_time), __FILE__, "Non-class", __LINE__, "Target has wrong size");
     }
 
     size_t row_index, col_index;
+
     for (size_t i = 0; i < source.get_rows() - 1; ++i)
         for (size_t j = 0; j < source.get_columns() - 1; ++j) {
             row_index = i >= ex_row ? i + 1 : i;
@@ -26,11 +28,14 @@ static T _determinant(const Matrix <T> &matrix) {
 
     Matrix <T> tmp(matrix.get_rows() - 1, matrix.get_columns() - 1);
     T res = {};
+
     for (size_t i = 0; i < matrix.get_rows(); ++i) {
-        _excludeCopy(tmp, matrix, 0, i);
+        _exclude_сopy(tmp, matrix, 0, i);
         T minor = _determinant(tmp);
+
         if (i & 1)
             minor = -minor;
+
         res += minor * matrix[0][i];
     }
 
@@ -43,6 +48,7 @@ T Matrix<T>::determinant() const {
     if (!is_square()) {
         time_t cur_time = time(NULL);
         auto local_time = localtime(&cur_time);
+
         throw InvalidState(asctime(local_time), __FILE__, typeid(*this).name(), __LINE__,
                            "Matrix should be square to get determinant;");
     }
@@ -64,11 +70,15 @@ void Matrix<T>::transpose() {
 }
 
 template<typename T>
+// обратная матрица
 void Matrix<T>::inverse() {
+
     T det = determinant();
+
     if (!is_square() || !det) {
         time_t cur_time = time(NULL);
         auto local_time = localtime(&cur_time);
+
         throw InvalidState(asctime(local_time), __FILE__, typeid(*this).name(), __LINE__,
                            "Only square matrix can be unversed and determinant should be > 0");
     }
@@ -79,7 +89,7 @@ void Matrix<T>::inverse() {
 
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j) {
-            _excludeCopy(tmp, *this, i, j);
+            _exclude_сopy(tmp, *this, i, j);
             value = tmp.determinant() / det;
             if ((i + j) & 1)
                 value = -value;
@@ -100,14 +110,14 @@ void Matrix<T>::fill(Iterator <T> start, const Iterator <T> &end, const T &value
         *it = value;
 }
 
-template <typename T>
-T &Matrix<T>::get_elem(size_t row, size_t col)
-{
+template<typename T>
+// получить элемент матрицы
+T &Matrix<T>::get_elem(size_t row, size_t col) {
     return _data[row][col];
 }
 
-template <typename T>
-const T &Matrix<T>::get_elem(size_t row, size_t col) const
-{
+template<typename T>
+// получить элемент матрицы
+const T &Matrix<T>::get_elem(size_t row, size_t col) const {
     return _data[row][col];
 }

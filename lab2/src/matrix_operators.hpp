@@ -171,8 +171,8 @@ template <typename T>
 // умножение 2-х матриц
 Matrix<T> &Matrix<T>::operator*=(const Matrix &matrix)
 {
-    _checkSizes(matrix);
-    _checkMultSizes(matrix);
+    _check_sizes(matrix);
+    _check_mult_sizes(matrix);
 
     Matrix<T> tmp(_rows, _cols);
     for (size_t i = 0; i < _rows; ++i)

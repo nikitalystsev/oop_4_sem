@@ -74,7 +74,7 @@ public:
 
     T determinant() const;
     void transpose();
-    void inverse();
+    void inverse(); // обратная матрица
     bool is_square() const;
     void fill(Iterator<T> start, const Iterator<T> &end, const T &value);
 
