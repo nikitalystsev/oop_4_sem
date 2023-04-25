@@ -1,13 +1,22 @@
 template<typename T>
+void _check_ptr(T ptr) {
+    if (ptr)
+        return;
+    time_t cur_time = time(NULL);
+    auto local_time = localtime(&cur_time);
+    throw InvalidArgument(asctime(local_time), __FILE__, "Non-class", __LINE__, "nullptr as a ptr of c-matrix");
+}
+
+template<typename T>
 // первый конструктор
 Matrix<T>::Matrix(size_t rows, size_t columns): MatrixBase(rows, columns) {
-    _data = _allocateMemory(rows, columns);
+    _data = _mem_alloc(rows, columns);
 }
 
 template<typename T>
 // второй конструктор
 Matrix<T>::Matrix(size_t rows, size_t columns, const T &fill): MatrixBase(rows, columns) {
-    _data = _allocateMemory(rows, columns);
+    _data = _mem_alloc(rows, columns);
     for (size_t i = 0; i < rows; ++i)
         for (size_t j = 0; j < columns; ++j)
             _data[i][j] = fill;
@@ -17,9 +26,9 @@ template<typename T>
 // третий конструктор
 Matrix<T>::Matrix(size_t rows, size_t columns, T **matrix): MatrixBase(rows, columns) {
     _check_ptr(matrix);
-    _data = _allocateMemory(rows, columns);
+    _data = _mem_alloc(rows, columns);
     for (size_t i = 0; i < rows; ++i) {
-        _checkPtr(matrix[i]);
+        _check_ptr(matrix[i]);
         for (size_t j = 0; j < columns; ++j)
             _data[i][j] = matrix[i][j];
     }
@@ -40,7 +49,7 @@ Matrix<T>::Matrix(std::initializer_list <std::initializer_list<T>> init_list) {
                                   "Bad initializer list");
         }
 
-    _data = _allocateMemory(rows, cols);
+    _data = _mem_alloc(rows, cols);
     _rows = rows;
     _cols = cols;
     size_t i = 0;
@@ -54,7 +63,7 @@ Matrix<T>::Matrix(std::initializer_list <std::initializer_list<T>> init_list) {
 template<typename T>
 // конструктор копирования
 Matrix<T>::Matrix(const Matrix &matrix): MatrixBase(matrix._rows, matrix._cols) {
-    _data = _allocateMemory(matrix._rows, matrix._cols);
+    _data = _mem_alloc(matrix._rows, matrix._cols);
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
             _data[i][j] = matrix[i][j];
@@ -63,13 +72,4 @@ Matrix<T>::Matrix(const Matrix &matrix): MatrixBase(matrix._rows, matrix._cols) 
 template<typename T>
 Matrix<T>::Matrix(Matrix &&matrix): MatrixBase(matrix._rows, matrix._cols) {
     _data = matrix._data;
-}
-
-template<typename T>
-void _check_ptr(T ptr) {
-    if (ptr)
-        return;
-    time_t cur_time = time(NULL);
-    auto local_time = localtime(&cur_time);
-    throw InvalidArgument(asctime(local_time), __FILE__, "Non-class", __LINE__, "nullptr as a ptr of c-matrix");
 }

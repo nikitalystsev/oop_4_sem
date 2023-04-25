@@ -1,7 +1,7 @@
 template<typename T>
 // переопределяем = для матрицы
 Matrix <T> &Matrix<T>::operator=(const Matrix &matrix) {
-    _data = _allocateMemory(matrix._rows, matrix._cols);
+    _data = _mem_alloc(matrix._rows, matrix._cols);
     _rows = matrix._rows, _cols = matrix._cols;
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)

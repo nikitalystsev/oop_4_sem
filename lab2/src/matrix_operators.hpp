@@ -28,7 +28,7 @@ template <typename T2>
 // сложение 2-х матриц
 decltype(auto) Matrix<T>::operator+(const Matrix<T2> &matrix) const
 {
-    _checkSizes(matrix);
+    _check_sizes(matrix);
     Matrix<decltype((*this)[0][0] + matrix[0][0])> tmp(_rows, _cols);
 
     for (size_t i = 0; i < _rows; ++i)
@@ -133,7 +133,7 @@ template <typename T2>
 // умножение 2-х матриц
 decltype(auto) Matrix<T>::operator*(const Matrix<T2> &matrix) const
 {
-    _checkMultSizes(matrix);
+    _check_mult_sizes(matrix);
 
     Matrix<decltype((*this)[0][0] * matrix[0][0])> tmp(_rows, matrix._cols);
     for (size_t i = 0; i < _rows; ++i)
@@ -243,7 +243,15 @@ Matrix<T> &Matrix<T>::operator/=(const Matrix &matrix)
     return *this;
 }
 
-
+template <typename T>
+Matrix<T> Matrix<T>::operator-()
+{
+    Matrix<T> tmp(_rows, _cols);
+    for (size_t i = 0; i < _rows; ++i)
+        for (size_t j = 0; j < _cols; ++j)
+            tmp[i][j] = -_data[i][j];
+    return tmp;
+}
 
 
 template <typename T>
@@ -277,13 +285,13 @@ std::ostream &operator<<(std::ostream &out, const Matrix<T> &matrix)
     bool first_row = true;
     bool first_col = true;
 
-    for (size_t i = 0; i < matrix.GetRows(); ++i) {
+    for (size_t i = 0; i < matrix.get_rows(); ++i) {
         first_col = true;
         if (!first_row)
             out << "\n";
         first_row = false;
 
-        for(size_t j = 0; j < matrix.GetColumns(); ++j) {
+        for(size_t j = 0; j < matrix.get_columns(); ++j) {
             if (!first_col)
                 out << '\t';
             first_col = false;

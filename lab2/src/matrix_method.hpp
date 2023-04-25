@@ -43,7 +43,7 @@ T Matrix<T>::determinant() const {
     if (!is_square()) {
         time_t cur_time = time(NULL);
         auto local_time = localtime(&cur_time);
-        throw InvalidState(asctime(curtime), __FILE__, typeid(*this).name(), __LINE__,
+        throw InvalidState(asctime(local_time), __FILE__, typeid(*this).name(), __LINE__,
                            "Matrix should be square to get determinant;");
     }
 
@@ -53,7 +53,7 @@ T Matrix<T>::determinant() const {
 template<typename T>
 // транспонирование матрицы
 void Matrix<T>::transpose() {
-    auto tmp = _allocateMemory(_cols, _rows);
+    auto tmp = _mem_alloc(_cols, _rows);
 
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
@@ -69,7 +69,7 @@ void Matrix<T>::inverse() {
     if (!is_square() || !det) {
         time_t cur_time = time(NULL);
         auto local_time = localtime(&cur_time);
-        throw InvalidState(asctime(curtime), __FILE__, typeid(*this).name(), __LINE__,
+        throw InvalidState(asctime(local_time), __FILE__, typeid(*this).name(), __LINE__,
                            "Only square matrix can be unversed and determinant should be > 0");
     }
 
@@ -98,4 +98,16 @@ template<typename T>
 void Matrix<T>::fill(Iterator <T> start, const Iterator <T> &end, const T &value) {
     for (auto it = start; it < end; ++it)
         *it = value;
+}
+
+template <typename T>
+T &Matrix<T>::get_elem(size_t row, size_t col)
+{
+    return _data[row][col];
+}
+
+template <typename T>
+const T &Matrix<T>::get_elem(size_t row, size_t col) const
+{
+    return _data[row][col];
 }
