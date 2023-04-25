@@ -15,12 +15,10 @@ public:
 
     virtual ~MatrixException() {};
 
-    virtual const char *what() const
+    virtual const char *what() const noexcept override {
+        return _err_msg.c_str();
+    };
 
-    noexcept override
-            {
-                    return _err_msg.c_str();
-            };
 protected:
     string _err_msg;
 };
