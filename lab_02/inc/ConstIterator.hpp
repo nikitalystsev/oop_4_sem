@@ -1,0 +1,5 @@
+#ifndef __CONSTITERATOR_HPP__
+#define __CONSTITERATOR_HPP__
+
+
+#endif // __CONSTITERATOR_HPP__
