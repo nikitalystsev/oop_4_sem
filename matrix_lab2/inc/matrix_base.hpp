@@ -1,8 +1,10 @@
-#pragma once
+#ifndef __MATRIX_BASE_HPP__
+#define __MATRIX_BASE_HPP__
 
 #include <cstddef>
 
-class MatrixBase {
+class MatrixBase
+{
 public:
     MatrixBase(size_t rows = 0, size_t columns = 0) : _rows(rows), _cols(columns) {}
 
@@ -19,3 +21,5 @@ protected:
 };
 
 MatrixBase::~MatrixBase() {}
+
+#endif
