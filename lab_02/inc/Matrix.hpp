@@ -6,28 +6,34 @@
 
 #include "MatrixBase.hpp" // класс матрицы будет наследоваться от базового класса
 #include "MatrixRow.hpp"
+#include "Iterator.hpp"
 
 // класс будет шаблонным, то есть тип элемента матрицы будет определяться при создании
 template <typename T>
 class Matrix : public MatrixBase // наследуется от базового класса
 {
+    friend Iterator<T>;
 public:
     // различные конструкторы класса Matrix
     explicit Matrix() = default; // конструктор без параметров по умолчанию
-    Matrix(const size_t rows = 0, const size_t cols = 0);
-    Matrix(const size_t rows, const size_t cols, const T &filler);              // конструктор для заполнения матрицы filler-ом
-    explicit Matrix(const size_t rows, const size_t columns, T **matrix);       // создание матрицы на основе си матрицы
-    explicit Matrix(std::initializer_list<std::initializer_list<T>> init_list); // конструктор по списку инициализации
-    explicit Matrix(const Matrix<T> &matrix);                                   // конструктор копирования
-    explicit Matrix(Matrix<T> &&matrix);                                        // конструктор перемещения
+    explicit Matrix(const size_t rows = 0, const size_t cols = 0);
+    explicit Matrix(const size_t rows, const size_t cols, const T &filler); // конструктор для заполнения матрицы filler-ом
+    explicit Matrix(const size_t rows, const size_t columns, T **matrix);   // создание матрицы на основе си матрицы
+    Matrix(std::initializer_list<std::initializer_list<T>> init_list);      // конструктор по списку инициализации
+    explicit Matrix(const Matrix<T> &matrix);                               // конструктор копирования
+    explicit Matrix(Matrix<T> &&matrix);                                    // конструктор перемещения
 
     ~Matrix() noexcept = default; // деструктор класса по умолчанию
 
+    MatrixRow<T> operator[](size_t row);             // методы, возвращающие строку матрицы
     const MatrixRow<T> operator[](size_t row) const; // методы, возвращающие строку матрицы
+
+    Iterator<T> begin();
+    Iterator<T> end();
 
 private:
     // атрибуты _rows и _cols не объявляю, поскольку они есть в базовом классе
-    std::shared_ptr<MatrixRow<T>[]> _data{nullptr};           // собственно сами данные (массив указателей на строки)
+    std::shared_ptr<MatrixRow<T>[]> _data;           // собственно сами данные (массив указателей на строки)
     void _matrix_alloc(const size_t rows, const size_t cols); // метод выделяет память под матрицы
 };
 
@@ -113,6 +119,20 @@ Matrix<T>::Matrix(Matrix &&matrix) : MatrixBase(matrix._rows, matrix._cols)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
+MatrixRow<T> Matrix<T>::operator[](size_t row)
+{
+    return _data[row];
+}
+
+template <typename T>
+const MatrixRow<T> Matrix<T>::operator[](size_t row) const
+{
+    return _data[row];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
 void Matrix<T>::_matrix_alloc(size_t rows, size_t cols)
 {
     _data.reset(new MatrixRow<T>[rows]);
@@ -124,9 +144,42 @@ void Matrix<T>::_matrix_alloc(size_t rows, size_t cols)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-const MatrixRow<T> Matrix<T>::operator[](size_t row) const
+Iterator<T> Matrix<T>::begin()
 {
-    return _data[row];
+    return Iterator<T>(*this, 0);
 }
 
+template <typename T>
+Iterator<T> Matrix<T>::end()
+{
+    return Iterator<T>(*this, _cols * _rows);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+// вывод матрицы на экран
+std::ostream &operator<<(std::ostream &out, const Matrix<T> &matrix)
+{
+    bool first_row = true;
+    bool first_col = true;
+
+    for (size_t i = 0; i < matrix.get_rows(); ++i)
+    {
+        first_col = true;
+        if (!first_row)
+            out << "\n";
+        first_row = false;
+
+        for (size_t j = 0; j < matrix.get_cols(); ++j)
+        {
+            if (!first_col)
+                out << '\t';
+            first_col = false;
+            out << matrix[i][j];
+        }
+    }
+
+    return out;
+}
 #endif // __MATRIX_HPP__

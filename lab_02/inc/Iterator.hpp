@@ -6,8 +6,10 @@
 
 #include "Matrix.hpp"
 
-template <typename T>
+template <typename T> // объявление класса Matrix
+class Matrix;
 
+template <typename T>
 class Iterator
 {
 public:
@@ -17,9 +19,9 @@ public:
     using pointer_type = T *;
     using l_link_type = T &;
 
-    explicit Iterator() = default;                                      // конструктор без параметров по умолчанию
-    explicit Iterator(const Matrix<T> &matrix, const size_t index = 0); // конструктор итератора
-    explicit Iterator(const Iterator<T> &it) = default;                 // конструктор копирования
+    explicit Iterator() = default;                             // конструктор без параметров по умолчанию
+    Iterator(const Matrix<T> &matrix, const size_t index = 0); // конструктор итератора
+    explicit Iterator(const Iterator<T> &it) = default;        // конструктор копирования
 
     ~Iterator() noexcept = default; // деструктор дефолтный
 
@@ -31,18 +33,24 @@ public:
     Iterator<T> operator-(const int value) const;
     Iterator<T> &operator+=(const int value);
     Iterator<T> &operator-=(const int value);
+
     Iterator<T> &operator=(const Iterator<T> &it);
 
     Iterator<T> &operator++();
     Iterator<T> operator++(int);
+    Iterator<T> &next();
 
     T &operator*();
     const T &operator*() const;
     T *operator->();
     const T *operator->() const;
 
+    operator bool() const;
+    bool is_end() const;
+    bool is_valid_data() const;
+
 private:
-    std::weak_ptr<MatrixRow<T>[]> _data_iter{nullptr};
+    std::weak_ptr<MatrixRow<T>[]> _data_iter;
     size_t _index = 0; // индекс это номер элемента в матрице ка если бы все ее элементы построчно расположились бы на одной строки
     size_t _rows = 0;
     size_t _cols = 0;
@@ -142,6 +150,8 @@ Iterator<T> &Iterator<T>::operator=(const Iterator<T> &it)
     return *this;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename T>
 // переопределили префиксный инкремент
 Iterator<T> &Iterator<T>::operator++()
@@ -161,6 +171,13 @@ Iterator<T> Iterator<T>::operator++(int)
     ++(*this);
 
     return it;
+}
+
+template <typename T>
+// next
+Iterator<T> &Iterator<T>::next()
+{
+    return operator++();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,6 +220,26 @@ const T *Iterator<T>::operator->() const
     std::shared_ptr<MatrixRow<T>[]> data_ptr = _data_iter.lock();
 
     return data_ptr[_index / _cols].get_address() + (_index % _cols);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+Iterator<T>::operator bool() const
+{
+    return _data_iter.expired();
+}
+
+template <typename T>
+bool Iterator<T>::is_end() const
+{
+    return _index == _rows * _cols;
+}
+
+template <typename T>
+bool Iterator<T>::is_valid_data() const
+{
+    return !_data_iter.expired();
 }
 
 #endif // __ITERATOR_HPP__
