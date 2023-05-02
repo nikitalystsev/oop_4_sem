@@ -16,7 +16,7 @@ public:
                  class_name, file_info, line_info, err_msg);
     };
 
-    ~MatrixExceptions();
+    ~MatrixExceptions(){};
 
     virtual const char *what() const noexcept override
     {
