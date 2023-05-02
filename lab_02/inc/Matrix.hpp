@@ -8,12 +8,14 @@
 #include "MatrixBase.hpp" // класс матрицы будет наследоваться от базового класса
 #include "MatrixRow.hpp"
 #include "Iterator.hpp"
+#include "ConstIterator.hpp"
 
 // класс будет шаблонным, то есть тип элемента матрицы будет определяться при создании
 template <typename T>
 class Matrix : public MatrixBase // наследуется от базового класса
 {
     friend Iterator<T>;
+    friend ConstIterator<T>;
 
 public:
     // различные конструкторы класса Matrix
@@ -33,6 +35,8 @@ public:
     // методы для итерации по матрицы (итерация по строкам)
     Iterator<T> begin();
     Iterator<T> end();
+    ConstIterator<T> cbegin() const;
+    ConstIterator<T> cend() const;
 
     Matrix<T> &operator=(const Matrix<T> &matrix);
     Matrix<T> &operator=(Matrix<T> &&matrix);
@@ -223,6 +227,18 @@ template <typename T>
 Iterator<T> Matrix<T>::end()
 {
     return Iterator<T>(*this, _cols * _rows);
+}
+
+template <typename T>
+ConstIterator<T> Matrix<T>::cbegin() const
+{
+    return ConstIterator<T>(*this, 0);
+}
+
+template <typename T>
+ConstIterator<T> Matrix<T>::cend() const
+{
+    return ConstIterator<T>(*this, _cols * _rows);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
