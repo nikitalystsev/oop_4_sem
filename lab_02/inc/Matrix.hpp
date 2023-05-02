@@ -736,4 +736,5 @@ std::ostream &operator<<(std::ostream &out, const Matrix<T> &matrix)
 
     return out;
 }
+
 #endif // __MATRIX_HPP__
