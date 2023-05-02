@@ -1,6 +1,66 @@
 #include <iostream>
 #include "Matrix.hpp"
 
+// int inversion_matrix(matrix_t *const matrix)
+// {
+//     double temp;
+
+//     matrix_t iden;
+//     iden.rows = matrix->rows;
+//     iden.cols = matrix->cols;
+
+//     if (matrix_alloc(&iden) != 0)
+//         return ERR_ALLOC_MATRIX;
+
+    // for (size_t i = 0; i < matrix->rows; i++)
+    //     for (size_t j = 0; j < matrix->rows; j++)
+    //         iden.matrix[i][j] = i == j;
+
+    // for (size_t k = 0; k < matrix->rows; k++)
+    // {
+    //     temp = matrix->matrix[k][k];
+
+    //     for (size_t j = 0; j < matrix->rows; j++)
+    //     {
+    //         matrix->matrix[k][j] /= temp;
+    //         iden.matrix[k][j] /= temp;
+    //     }
+
+    //     for (size_t i = k + 1; i < matrix->rows; i++)
+    //     {
+    //         temp = matrix->matrix[i][k];
+
+    //         for (size_t j = 0; j < matrix->rows; j++)
+    //         {
+    //             matrix->matrix[i][j] -= matrix->matrix[k][j] * temp;
+    //             iden.matrix[i][j] -= iden.matrix[k][j] * temp;
+    //         }
+    //     }
+    // }
+
+//     for (int k = matrix->rows - 1; k > 0; k--)
+//     {
+//         for (int i = k - 1; i >= 0; i--)
+//         {
+//             temp = matrix->matrix[i][k];
+
+//             for (size_t j = 0; j < matrix->rows; j++)
+//             {
+//                 matrix->matrix[i][j] -= matrix->matrix[k][j] * temp;
+//                 iden.matrix[i][j] -= iden.matrix[k][j] * temp;
+//             }
+//         }
+//     }
+
+//     for (size_t i = 0; i < matrix->rows; i++)
+//         for (size_t j = 0; j < matrix->rows; j++)
+//             matrix->matrix[i][j] = iden.matrix[i][j];
+
+//     matrix_free(iden.matrix, iden.rows);
+
+//     return EXIT_SUCCESS;
+// }
+
 int main()
 {
     std::cout << "Тестирование конструкторов создания матрицы:\n\n";
@@ -9,7 +69,7 @@ int main()
     std::cout << my_matrix << "\n\n";
 
     std::cout << "Тестирование итератора матрицы:\n\n";
-    Matrix<int> new_matrix = {{0, 3, -1, 1},
+    Matrix<int> new_matrix = {{1, 3, -1, 1},
                               {1, 2, 0, 0},
                               {0, 4, 3, 5},
                               {2, -1, -4, -2}};
@@ -23,9 +83,9 @@ int main()
 
     std::cout << "\n\n";
 
-    Matrix<int> transpose = new_matrix.transpose();
+    Matrix<int> neg_matrix = new_matrix.neg();
 
-    std::cout << transpose << "\n\n";
+    std::cout << new_matrix << "\n\n";
 
     return 0;
 }

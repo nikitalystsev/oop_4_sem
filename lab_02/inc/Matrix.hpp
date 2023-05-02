@@ -81,12 +81,19 @@ public:
     Matrix<T> &mul_eq_matrix(const Matrix &matrix);
     Matrix<T> &mul_eq_elem(const T &elem) noexcept;
 
+    Matrix<T> operator-();
+    Matrix<T> neg();
+
     // более сложные математические операции
     double determinant() const;
-
     Matrix<T> transpose();
+    Matrix<T> identity();
+    // Matrix<T> inverse();
 
-    Matrix<T> operator-();
+    bool is_square() const;                                               // квадратная ли матрица
+    void fill(Iterator<T> start, const Iterator<T> &end, const T &value); // заполнение матрицы значениями
+    T &get_elem(size_t row, size_t col);
+    const T &get_elem(size_t row, size_t col) const;
 
 private:
     // атрибуты _rows и _cols не объявляю, поскольку они есть в базовом классе
@@ -500,6 +507,26 @@ Matrix<T> &Matrix<T>::mul_eq_elem(const T &elem) noexcept
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
+Matrix<T> Matrix<T>::operator-()
+{
+    Matrix<T> tmp(_rows, _cols);
+
+    for (size_t i = 0; i < _rows; ++i)
+        for (size_t j = 0; j < _cols; ++j)
+            tmp[i][j] = -_data[i][j];
+
+    return tmp;
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::neg()
+{
+    return operator-();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
 double Matrix<T>::determinant() const
 {
     if (this->get_rows() == 2)
@@ -563,15 +590,107 @@ Matrix<T> Matrix<T>::transpose()
 }
 
 template <typename T>
-Matrix<T> Matrix<T>::operator-()
+Matrix<T> Matrix<T>::identity()
 {
-    Matrix<T> tmp(_rows, _cols);
+    Matrix<T> tmp(_cols, _rows);
 
-    for (size_t i = 0; i < _rows; ++i)
-        for (size_t j = 0; j < _cols; ++j)
-            tmp[i][j] = -_data[i][j];
+    for (size_t i = 0; i < tmp.get_rows(); i++)
+        for (size_t j = 0; j < tmp.get_cols(); j++)
+            tmp[i][j] = i == j;
 
     return tmp;
+}
+
+// template <typename T>
+// Matrix<T> Matrix<T>::inverse()
+// {
+//     T temp;
+
+//     Matrix<T> iden = identity();
+//     Matrix<T> tmp(*this);
+
+//     std::cout << "закончил работу\n\n";
+
+//     for (size_t k = 0; k < tmp.get_rows(); k++)
+//     {
+//         temp = tmp[k][k];
+
+//         std::cout << "в цикле\n\n";
+
+//         for (size_t j = 0; j < tmp.get_rows(); j++)
+//         {
+//             tmp[k][j] /= temp;
+//             iden[k][j] /= temp;
+//         }
+
+//         for (size_t i = k + 1; i < tmp.get_rows(); i++)
+//         {
+//             temp = tmp[i][k];
+
+//             for (size_t j = 0; j < tmp.get_rows(); j++)
+//             {
+//                 tmp[i][j] -= tmp[k][j] * temp;
+//                 iden[i][j] -= iden[k][j] * temp;
+//             }
+//         }
+//     }
+
+//     std::cout << "закончил работу\n\n";
+
+//     for (int k = tmp.get_rows() - 1; k > 0; k--)
+//     {
+//         for (int i = k - 1; i >= 0; i--)
+//         {
+//             temp = tmp[i][k];
+
+//             for (size_t j = 0; j < tmp.get_rows(); j++)
+//             {
+//                 tmp[i][j] -= tmp[k][j] * temp;
+//                 iden[i][j] -= iden[k][j] * temp;
+//             }
+//         }
+//     }
+
+//     std::cout << "закончил работу\n\n";
+
+//     for (size_t i = 0; i < tmp.get_rows(); i++)
+//         for (size_t j = 0; j < tmp.get_rows(); j++)
+//             tmp[i][j] = iden[i][j];
+
+//     std::cout << "закончил работу\n\n";
+
+//     return tmp;
+// }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+// квадратная ли матрица
+bool Matrix<T>::is_square() const
+{
+    return _rows == _cols;
+}
+
+template <typename T>
+// заполнить часть матрицы значениями
+void Matrix<T>::fill(Iterator<T> start, const Iterator<T> &end, const T &value)
+{
+    for (auto it = start; it < end; ++it)
+        *it = value;
+}
+
+template <typename T>
+// получить элемент матрицы
+T &Matrix<T>::get_elem(size_t row, size_t col)
+{
+    return _data[row][col];
+}
+
+template <typename T>
+// получить элемент матрицы
+const T &Matrix<T>::get_elem(size_t row, size_t col) const
+{
+    return _data[row][col];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
