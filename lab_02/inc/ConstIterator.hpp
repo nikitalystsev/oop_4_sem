@@ -21,25 +21,34 @@ public:
     using reference = T &;
 
     ConstIterator(const Matrix<T> &matrix, const size_t index = 0); // конструктор итератора
-    explicit ConstIterator(const ConstIterator<T> &it) = default;        // конструктор копирования
+    ConstIterator(const ConstIterator<T> &it) = default;            // конструктор копирования
+    ConstIterator(ConstIterator &&it) noexcept = default;           // конструктор перемещения
 
     ~ConstIterator() noexcept = default; // деструктор дефолтный
 
-    bool operator!=(ConstIterator const &other) const;
-    bool operator==(ConstIterator const &other) const;
-    bool operator<(ConstIterator const &other) const;
+    // сравнение
+    bool operator!=(ConstIterator<T> const &other) const;
+    bool operator==(ConstIterator<T> const &other) const;
+    bool operator<(ConstIterator<T> const &other) const;
+    bool operator<=(ConstIterator<T> const &other) const;
+    bool operator>(ConstIterator<T> const &other) const;
+    bool operator>=(ConstIterator<T> const &other) const;
 
+    // перемещение
+    ConstIterator<T> &operator++() const;
+    ConstIterator<T> operator++(int) const;
+    ConstIterator<T> &next() const;
+    ConstIterator<T> &operator--() const;
+    ConstIterator<T> operator--(int) const;
     ConstIterator<T> operator+(const int value) const;
     ConstIterator<T> operator-(const int value) const;
     ConstIterator<T> &operator+=(const int value) const;
     ConstIterator<T> &operator-=(const int value) const;
 
-    ConstIterator<T> &operator++() const;
-    ConstIterator<T> operator++(int) const;
-    ConstIterator<T> &next() const;
-
+    // доступ
     const T &operator*() const;
     const T *operator->() const;
+    const T &operator[](const size_t index) const;
 
     operator bool() const;
     bool is_end() const;
@@ -50,6 +59,10 @@ private:
     mutable size_t _index = 0; // индекс это номер элемента в матрице ка если бы все ее элементы построчно расположились бы на одной строки
     size_t _rows = 0;
     size_t _cols = 0;
+
+    // приватные матоды
+    void _check_index(const string hint = "");
+    void _check_data(const string hint = "") const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,26 +81,96 @@ ConstIterator<T>::ConstIterator(const Matrix<T> &matrix, const size_t index)
 
 template <typename T>
 // переопределили !=
-bool ConstIterator<T>::operator!=(ConstIterator const &other) const
+bool ConstIterator<T>::operator!=(ConstIterator<T> const &other) const
 {
     return _index != other._index;
 }
 
 template <typename T>
 // переопределили ==
-bool ConstIterator<T>::operator==(ConstIterator const &other) const
+bool ConstIterator<T>::operator==(ConstIterator<T> const &other) const
 {
     return _index == other._index;
 }
 
 template <typename T>
 // переопределили <
-bool ConstIterator<T>::operator<(ConstIterator const &other) const
+bool ConstIterator<T>::operator<(ConstIterator<T> const &other) const
+{
+    return _index < other._index;
+}
+
+template <typename T>
+// переопределили <=
+bool ConstIterator<T>::operator<=(ConstIterator<T> const &other) const
+{
+    return _index <= other._index;
+}
+
+template <typename T>
+// переопределили >
+bool ConstIterator<T>::operator>(ConstIterator<T> const &other) const
+{
+    return _index > other._index;
+}
+
+template <typename T>
+// переопределили >=
+bool ConstIterator<T>::operator>=(ConstIterator<T> const &other) const
 {
     return _index < other._index;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+// переопределили префиксный инкремент
+ConstIterator<T> &ConstIterator<T>::operator++() const
+{
+    if (_index < _cols * _rows)
+        ++_index;
+
+    return *this;
+}
+
+template <typename T>
+// переопределили постфиксный инкремент
+ConstIterator<T> ConstIterator<T>::operator++(int) const
+{
+    ConstIterator<T> it(*this);
+
+    ++(*this);
+
+    return it;
+}
+
+template <typename T>
+// next
+ConstIterator<T> &ConstIterator<T>::next() const
+{
+    return operator++();
+}
+
+template <typename T>
+ConstIterator<T> &ConstIterator<T>::operator--() const
+{
+    if (_index < _cols * _rows)
+    {
+        --_index;
+    }
+
+    return *this;
+}
+
+template <typename T>
+ConstIterator<T> ConstIterator<T>::operator--(int) const
+{
+    ConstIterator<T> iter(*this);
+
+    --(*this);
+
+    return iter;
+}
 
 template <typename T>
 // переопределили оператор +
@@ -136,36 +219,6 @@ ConstIterator<T> &ConstIterator<T>::operator-=(const int value) const
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-// переопределили префиксный инкремент
-ConstIterator<T> &ConstIterator<T>::operator++() const
-{
-    if (_index < _cols * _rows)
-        ++_index;
-
-    return *this;
-}
-
-template <typename T>
-// переопределили постфиксный инкремент
-ConstIterator<T> ConstIterator<T>::operator++(int) const
-{
-    Iterator<T> it(*this);
-
-    ++(*this);
-
-    return it;
-}
-
-template <typename T>
-// next
-ConstIterator<T> &ConstIterator<T>::next() const
-{
-    return operator++();
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename T>
 // переопределили оператор разыменования *
 const T &ConstIterator<T>::operator*() const
 {
@@ -203,6 +256,28 @@ template <typename T>
 bool ConstIterator<T>::is_valid_data() const
 {
     return !_data_iter.expired();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+// метод для проверки индекса в итераторе
+void ConstIterator<T>::_check_index(const string hint)
+{
+    if (_index < _rows * _cols)
+        return;
+
+    throw IteratorIndexError(__FILE__, typeid(*this).name(), __LINE__, hint);
+}
+
+template <typename T>
+// метод проверяет данные на валидность
+void ConstIterator<T>::_check_data(const string hint) const
+{
+    if (is_valid_data())
+        return;
+
+    throw IteratorValidationError(__FILE__, typeid(*this).name(), __LINE__, hint);
 }
 
 #endif // __CONSTITERATOR_HPP__

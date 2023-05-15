@@ -104,42 +104,42 @@ Iterator<T> &Iterator<T>::operator=(const Iterator<T> &it)
 
 template <typename T>
 // переопределили !=
-bool Iterator<T>::operator!=(Iterator const &other) const
+bool Iterator<T>::operator!=(Iterator<T> const &other) const
 {
     return _index != other._index;
 }
 
 template <typename T>
 // переопределили ==
-bool Iterator<T>::operator==(Iterator const &other) const
+bool Iterator<T>::operator==(Iterator<T>const &other) const
 {
     return _index == other._index;
 }
 
 template <typename T>
 // переопределили <
-bool Iterator<T>::operator<(Iterator const &other) const
+bool Iterator<T>::operator<(Iterator<T> const &other) const
 {
     return _index < other._index;
 }
 
 template <typename T>
 // переопределили <=
-bool Iterator<T>::operator<=(Iterator const &other) const
+bool Iterator<T>::operator<=(Iterator<T> const &other) const
 {
     return _index <= other._index;
 }
 
 template <typename T>
 // переопределили >
-bool Iterator<T>::operator>(Iterator const &other) const
+bool Iterator<T>::operator>(Iterator<T> const &other) const
 {
     return _index > other._index;
 }
 
 template <typename T>
 // переопределили >=
-bool Iterator<T>::operator>=(Iterator const &other) const
+bool Iterator<T>::operator>=(Iterator<T> const &other) const
 {
     return _index < other._index;
 }
