@@ -6,37 +6,46 @@
 #include <cmath>
 
 #include "MatrixBase.hpp" // класс матрицы будет наследоваться от базового класса
-#include "MatrixRow.hpp"
 #include "Iterator.hpp"
 #include "ConstIterator.hpp"
+#include "MatrixExceptions.hpp"
 
 // класс будет шаблонным, то есть тип элемента матрицы будет определяться при создании
 template <typename T>
 class Matrix : public MatrixBase // наследуется от базового класса
 {
+public:
+    class MatrixRow;  // обьявляем класс MatrixRow
     friend Iterator<T>;
     friend ConstIterator<T>;
 
 public:
+    using value_type = T;
+
     // различные конструкторы класса Matrix
-    explicit Matrix() = default; // конструктор без параметров по умолчанию
+    Matrix() = default;
     explicit Matrix(const size_t rows = 0, const size_t cols = 0);
-    explicit Matrix(const size_t rows, const size_t cols, const T &filler); // конструктор для заполнения матрицы filler-ом
-    explicit Matrix(const size_t rows, const size_t columns, T **matrix);   // создание матрицы на основе си матрицы
-    Matrix(std::initializer_list<std::initializer_list<T>> init_list);      // конструктор по списку инициализации
-    Matrix(const Matrix<T> &matrix);                                        // конструктор копирования
-    explicit Matrix(Matrix<T> &&matrix);                                    // конструктор перемещения
+    Matrix(const size_t rows, const size_t cols, const T &filler);     // конструктор для заполнения матрицы filler-ом
+    Matrix(const size_t rows, const size_t columns, T **matrix);       // создание матрицы на основе си матрицы
+    Matrix(std::initializer_list<std::initializer_list<T>> init_list); // конструктор по списку инициализации
+    explicit Matrix(const Matrix<T> &matrix);                          // конструктор копирования
+    Matrix(Matrix<T> &&matrix);                                        // конструктор перемещения
 
     ~Matrix() noexcept = default; // деструктор класса по умолчанию
 
-    MatrixRow<T> operator[](size_t row);             // методы, возвращающие строку матрицы
-    const MatrixRow<T> operator[](size_t row) const; // методы, возвращающие строку матрицы
+    MatrixRow operator[](size_t row);             // методы, возвращающие строку матрицы
+    const MatrixRow operator[](size_t row) const; // методы, возвращающие строку матрицы
 
     // методы для итерации по матрицы (итерация по строкам)
-    Iterator<T> begin();
-    Iterator<T> end();
-    ConstIterator<T> cbegin() const;
-    ConstIterator<T> cend() const;
+    // Iterator<T> begin();
+    // Iterator<T> end();
+    // ConstIterator<T> begin() const;
+    // ConstIterator<T> end() const;
+    // ConstIterator<T> cbegin() const;
+    // ConstIterator<T> cend() const;
+
+    bool operator==(const Matrix &matrix) const;
+    bool operator!=(const Matrix &matrix) const;
 
     Matrix<T> &operator=(const Matrix<T> &matrix);
     Matrix<T> &operator=(Matrix<T> &&matrix);
@@ -93,16 +102,42 @@ public:
     Matrix<T> transpose();
     Matrix<T> identity();
     // Matrix<T> inverse();
-
     bool is_square() const;                                               // квадратная ли матрица
-    void fill(Iterator<T> start, const Iterator<T> &end, const T &value); // заполнение матрицы значениями
+    // void fill(Iterator<T> start, const Iterator<T> &end, const T &value); // заполнение матрицы значениями
+    
     T &get_elem(size_t row, size_t col);
     const T &get_elem(size_t row, size_t col) const;
 
 private:
     // атрибуты _rows и _cols не объявляю, поскольку они есть в базовом классе
-    std::shared_ptr<MatrixRow<T>[]> _data;                                               // собственно сами данные (массив указателей на строки)
-    std::shared_ptr<MatrixRow<T>[]> _matrix_alloc(const size_t rows, const size_t cols); // метод выделяет память под матрицы
+    std::shared_ptr<MatrixRow[]> _data;                                               // собственно сами данные (массив указателей на строки)
+    std::shared_ptr<MatrixRow[]> _matrix_alloc(const size_t rows, const size_t cols); // метод выделяет память под матрицы
+
+    void _check_index(size_t pos, size_t limit) const;
+    void _check_sizes(const Matrix &matrix) const;
+    void _check_mult_sizes(const Matrix &matrix) const;
+
+    void _move_row(size_t from, size_t to);
+    void _move_col(size_t from, size_t to);
+
+public: // для описания строки матрицы как подкласса самой матрицы
+    class MatrixRow
+    {
+    public:
+        explicit MatrixRow();                                         // конструктор без параметров
+        explicit MatrixRow(const T *data_row, const size_t size_row); // конструктор создания строки матрицы
+
+        ~MatrixRow() noexcept = default; // деструктор класса строки по умолчанию
+
+        T &operator[](const size_t index);             // получение элемента строки через индексацию
+        const T &operator[](const size_t index) const; // получение элемента строки через индексацию (константное)
+
+        void reset(T *data_row, const size_t size_row); // переустановка новых данных
+        void reset();                                   // сброс данных
+    private:
+        std::shared_ptr<T[]> _data_row{nullptr}; // элементы строки
+        size_t _size_row = 0;                    // количество элементов в строке
+    };
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,10 +162,20 @@ Matrix<T>::Matrix(const size_t rows, const size_t cols, const T &filler) : Matri
 }
 
 template <typename T>
+void _check_ptr(T ptr)
+{
+    if (ptr)
+        return;
+
+    throw InvalidArgument(__FILE__, "Non-class", __LINE__, "nullptr as a ptr of c-matrix");
+}
+
+template <typename T>
 // конструктор создания матрицы на основе си матрицы. Вызывается конструктор базового класса
 Matrix<T>::Matrix(const size_t rows, const size_t cols, T **matrix) : MatrixBase(rows, cols)
 {
-    // позже добавить проверку указателя
+    _check_ptr(matrix); // проверка указателя
+
     _data = _matrix_alloc(rows, cols); // выделяем память под матрицу
 
     for (size_t i = 0; i < rows; ++i)
@@ -149,9 +194,12 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> init_list)
     size_t rows = init_list.size();          // количество строк
     size_t cols = init_list.begin()->size(); // количество столбцов
 
-    // добавить позже проверку, что количество столбцов во всех строках одинаковое
-
-    std::cout << "Вызвался конструктор на основе списка инициализации\n\n";
+    for (const auto &ilist : init_list)
+        if (ilist.size() != cols)
+        {
+            throw InvalidArgument(__FILE__, typeid(*this).name(),
+                                  __LINE__, "Bad initializer list");
+        }
 
     _data = _matrix_alloc(rows, cols); // выделяем память под матрицу
 
@@ -189,13 +237,13 @@ Matrix<T>::Matrix(Matrix &&matrix) : MatrixBase(matrix._rows, matrix._cols)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-MatrixRow<T> Matrix<T>::operator[](size_t row)
+Matrix<T>::MatrixRow Matrix<T>::operator[](size_t row) 
 {
     return _data[row];
 }
 
 template <typename T>
-const MatrixRow<T> Matrix<T>::operator[](size_t row) const
+const Matrix<T>::MatrixRow Matrix<T>::operator[](size_t row) const 
 {
     return _data[row];
 }
@@ -203,42 +251,82 @@ const MatrixRow<T> Matrix<T>::operator[](size_t row) const
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-std::shared_ptr<MatrixRow<T>[]> Matrix<T>::_matrix_alloc(size_t rows, size_t cols)
+std::shared_ptr<typename Matrix<T>::MatrixRow[]> Matrix<T>::_matrix_alloc(size_t rows, size_t cols)
 {
-    std::shared_ptr<MatrixRow<T>[]> data = nullptr;
+    std::shared_ptr<MatrixRow[]> data = nullptr;
 
-    data.reset(new MatrixRow<T>[rows]);
+    try
+    {
+        data.reset(new MatrixRow[rows]);
 
-    for (size_t i = 0; i < rows; i++)
-        data[i].reset(new T[cols], cols);
+        for (size_t i = 0; i < rows; i++)
+            data[i].reset(new T[cols], cols);
+    }
+    catch (std::bad_alloc &err)
+    {
+        throw MemoryError(__FILE__, typeid(*this).name(), __LINE__, "_matrix_alloc function error");
+    }
 
     return data;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+// template <typename T>
+// Iterator<T> Matrix<T>::begin()
+// {
+//     return Iterator<T>(*this, 0);
+// }
+
+// template <typename T>
+// Iterator<T> Matrix<T>::end()
+// {
+//     return Iterator<T>(*this, _cols * _rows);
+// }
+// template <typename T>
+// ConstIterator<T> Matrix<T>::begin() const
+// {
+//     return ConstIterator<T>(*this, 0);
+// }
+
+// template <typename T>
+// ConstIterator<T> Matrix<T>::end() const
+// {
+//     return ConstIterator<T>(*this, _cols * _rows);
+// }
+
+// template <typename T>
+// ConstIterator<T> Matrix<T>::cbegin() const
+// {
+//     return ConstIterator<T>(*this, 0);
+// }
+
+// template <typename T>
+// ConstIterator<T> Matrix<T>::cend() const
+// {
+//     return ConstIterator<T>(*this, _cols * _rows);
+// }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename T>
-Iterator<T> Matrix<T>::begin()
+bool Matrix<T>::operator==(const Matrix &matrix) const
 {
-    return Iterator<T>(*this, 0);
+    if ((_rows != matrix._rows) || (_cols != matrix._cols))
+        return false;
+
+    for (size_t i = 0; i < _rows; ++i)
+        for (size_t j = 0; j < _cols; ++j)
+            if (_data[i][j] != matrix[i][j])
+                return false;
+
+    return true;
 }
 
 template <typename T>
-Iterator<T> Matrix<T>::end()
+bool Matrix<T>::operator!=(const Matrix &matrix) const
 {
-    return Iterator<T>(*this, _cols * _rows);
-}
-
-template <typename T>
-ConstIterator<T> Matrix<T>::cbegin() const
-{
-    return ConstIterator<T>(*this, 0);
-}
-
-template <typename T>
-ConstIterator<T> Matrix<T>::cend() const
-{
-    return ConstIterator<T>(*this, _cols * _rows);
+    return !operator==(matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -272,7 +360,11 @@ Matrix<T> &Matrix<T>::operator=(std::initializer_list<std::initializer_list<T>> 
 {
     size_t cols = init_list.begin()->size();
 
-    // добавить проверку на то, что количество элементов в каждой строке одинаковое
+    for (const auto &ilist : init_list)
+        if (ilist.size() != cols)
+        {
+            throw InvalidArgument(__FILE__, typeid(*this).name(), __LINE__, "Bad initializer list");
+        }
 
     size_t i = 0;
     for (const auto &ilist : init_list)
@@ -291,7 +383,7 @@ template <typename T>
 template <typename T2>
 decltype(auto) Matrix<T>::operator+(const Matrix<T2> &matrix) const
 {
-    // добавить проверку размеров матрицы
+    _check_sizes(matrix);
 
     Matrix<decltype((*this)[0][0] + matrix[0][0])> tmp(_rows, _cols);
 
@@ -317,7 +409,7 @@ decltype(auto) Matrix<T>::operator+(const T2 &elem) const noexcept
 template <typename T>
 Matrix<T> &Matrix<T>::operator+=(const Matrix &matrix)
 {
-    // добавить проверку размеров матрицы
+    _check_sizes(matrix);
 
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
@@ -367,7 +459,7 @@ template <typename T>
 template <typename T2>
 decltype(auto) Matrix<T>::operator-(const Matrix<T2> &matrix) const
 {
-    // добавить проверку размеров матрицы
+    _check_sizes(matrix);
 
     Matrix<decltype((*this)[0][0] - matrix[0][0])> tmp(_rows, _cols);
 
@@ -394,7 +486,7 @@ decltype(auto) Matrix<T>::operator-(const T2 &elem) const noexcept
 template <typename T>
 Matrix<T> &Matrix<T>::operator-=(const Matrix &matrix)
 {
-    // проверка размеров матрицы
+    _check_sizes(matrix);
 
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
@@ -444,7 +536,7 @@ template <typename T>
 template <typename T2>
 decltype(auto) Matrix<T>::operator*(const Matrix<T2> &matrix) const
 {
-    // проверка аргументов матрицы для матричного умножения
+    _check_mult_sizes(matrix);
 
     Matrix<decltype((*this)[0][0] * matrix[0][0])> tmp(_rows, matrix._cols);
 
@@ -472,7 +564,8 @@ decltype(auto) Matrix<T>::operator*(const T2 &elem) const noexcept
 template <typename T>
 Matrix<T> &Matrix<T>::operator*=(const Matrix &matrix)
 {
-    // проверить размеры матрицы
+    _check_sizes(matrix);
+    _check_mult_sizes(matrix);
 
     Matrix<T> tmp(_rows, _cols);
     for (size_t i = 0; i < _rows; ++i)
@@ -543,8 +636,34 @@ Matrix<T> Matrix<T>::neg()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
+Matrix<T> operator+(const T &elem, const Matrix<T> &matrix)
+{
+    return matrix + elem;
+}
+
+template <typename T>
+Matrix<T> operator-(const T &elem, const Matrix<T> &matrix)
+{
+    return matrix - elem;
+}
+
+template <typename T>
+Matrix<T> operator*(const T &elem, const Matrix<T> &matrix)
+{
+    return matrix * elem;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
 double Matrix<T>::determinant() const
 {
+
+    if (!is_square())
+    {
+        throw InvalidState(__FILE__, typeid(*this).name(), __LINE__, "Matrix should be square to get determinant;");
+    }
+
     if (this->get_rows() == 2)
         return _data[0][0] * _data[1][1] - _data[1][0] * _data[0][1];
 
@@ -687,13 +806,13 @@ bool Matrix<T>::is_square() const
     return _rows == _cols;
 }
 
-template <typename T>
-// заполнить часть матрицы значениями
-void Matrix<T>::fill(Iterator<T> start, const Iterator<T> &end, const T &value)
-{
-    for (auto it = start; it < end; ++it)
-        *it = value;
-}
+// template <typename T>
+// // заполнить часть матрицы значениями
+// void Matrix<T>::fill(Iterator<T> start, const Iterator<T> &end, const T &value)
+// {
+//     for (Iterator<T> it = start; it < end; ++it)
+//         *it = value;
+// }
 
 template <typename T>
 // получить элемент матрицы
@@ -707,6 +826,120 @@ template <typename T>
 const T &Matrix<T>::get_elem(size_t row, size_t col) const
 {
     return _data[row][col];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+void Matrix<T>::_check_index(size_t pos, size_t limit) const
+{
+    if (pos <= limit)
+        return;
+
+    throw IndexError(__FILE__, typeid(*this).name(), __LINE__, "Index is bigger than sizes");
+}
+
+template <typename T>
+void Matrix<T>::_check_sizes(const Matrix<T> &matrix) const
+{
+    if (_rows == matrix._rows &&_cols = matrix._cols)
+        return;
+
+    throw IncompatibleElements(__FILE__, typeid(*this).name(), __LINE__, "Different matrix sizes");
+}
+
+template <typename T>
+void Matrix<T>::_check_mult_sizes(const Matrix<T> &matrix) const
+{
+    if (_cols == matrix._rows)
+        return;
+
+    throw IncompatibleElements(__FILE__, typeid(*this).name(), __LINE__,
+                               "Bad sizes of matrices for multiplication");
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+void Matrix<T>::_move_row(size_t from, size_t to)
+{
+    auto tmp = _data[from];
+
+    for (size_t i = from; i > to; --i)
+
+        _data[i] = _data[i - 1];
+
+    for (size_t i = from; i < to; ++i)
+        _data[i] = _data[i + 1];
+
+    _data[to] = tmp;
+}
+
+template <typename T>
+void Matrix<T>::_move_col(size_t from, size_t to)
+{
+    for (size_t j = 0; j < _rows; ++j)
+    {
+        auto tmp = _data[j][from];
+
+        for (size_t i = from; i > to; --i)
+            _data[j][i] = _data[j][i - 1];
+
+        for (size_t i = from; i < to; ++i)
+            _data[j][i] = _data[j][i + 1];
+
+        _data[j][to] = tmp;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+// конструктро без параметров
+Matrix<T>::MatrixRow::MatrixRow() : _data_row(nullptr), _size_row(0)
+{
+}
+
+template <typename T>
+// конструктор создания строки матрицы
+Matrix<T>::MatrixRow::MatrixRow(const T *data_row, const size_t size_row) : _data_row(data_row), _size_row(size_row)
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+// получение элемента строки через индексацию
+T &Matrix<T>::MatrixRow::operator[](const size_t index)
+{
+    // позже добавить проверкку индекса
+    return _data_row[index];
+}
+
+template <typename T>
+// получение элемента строки через индексацию (константное)
+const T &Matrix<T>::MatrixRow::operator[](const size_t index) const
+{
+    // позже добавить проверкку индекса
+    return _data_row[index];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+// переустановка новых данных
+void Matrix<T>::MatrixRow::reset(T *data_row, const size_t size_row)
+{
+    _size_row = size_row;
+    _data_row.reset(data_row);
+}
+
+template <typename T>
+// сброс данных
+void Matrix<T>::MatrixRow::reset()
+{
+    _size_row = 0;
+    _data_row.reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

@@ -15,15 +15,16 @@ class Iterator
 public:
     // определили алиасы типов
     using iterator_type = std::random_access_iterator_tag;
-    using value_type = T;
-    using pointer_type = T *;
-    using l_link_type = T &;
+    using difference_type = std::ptrdiff_t;
+    using value_type = std::remove_const_t<T>;
+    using pointer = T *;
+    using reference = T &;
 
-    explicit Iterator() = default;                             // конструктор без параметров по умолчанию
     Iterator(const Matrix<T> &matrix, const size_t index = 0); // конструктор итератора
-    explicit Iterator(const Iterator<T> &it) = default;        // конструктор копирования
-
-    ~Iterator() noexcept = default; // деструктор дефолтный
+    Iterator(const Iterator<T> &it) = default;                 // конструктор копирования
+    Iterator(Iterator &&it) noexcept = default;                // конструктор перемещения
+    
+    ~Iterator() noexcept = default;                            // деструктор дефолтный
 
     bool operator!=(Iterator const &other) const;
     bool operator==(Iterator const &other) const;
@@ -50,7 +51,7 @@ public:
     bool is_valid_data() const;
 
 private:
-    std::weak_ptr<MatrixRow<T>[]> _data_iter;
+    std::weak_ptr<typename Matrix<T>::MatrixRow[]> _data_iter;
     size_t _index = 0; // индекс это номер элемента в матрице ка если бы все ее элементы построчно расположились бы на одной строки
     size_t _rows = 0;
     size_t _cols = 0;
@@ -188,7 +189,7 @@ T &Iterator<T>::operator*()
 {
     // позже добавить проверки на валидность указателя  и правильность индекса
 
-    std::shared_ptr<MatrixRow<T>[]> data_ptr = _data_iter.lock();
+    std::shared_ptr<typename Matrix<T>::MatrixRow<T>[]> data_ptr = _data_iter.lock();
 
     return data_ptr[_index / _cols][_index % _cols];
 }
@@ -197,7 +198,7 @@ template <typename T>
 // переопределили оператор разыменования *
 const T &Iterator<T>::operator*() const
 {
-    std::shared_ptr<MatrixRow<T>[]> data_ptr = _data_iter.lock();
+    std::shared_ptr<typename Matrix<T>::MatrixRow<T>[]> data_ptr = _data_iter.lock();
 
     return data_ptr[_index / _cols][_index % _cols];
 }
@@ -208,7 +209,7 @@ template <typename T>
 // переопределили ->
 T *Iterator<T>::operator->()
 {
-    std::shared_ptr<MatrixRow<T>[]> data_ptr = _data_iter.lock();
+    std::shared_ptr<typename Matrix<T>::MatrixRow<T>[]> data_ptr = _data_iter.lock();
 
     return data_ptr[_index / _cols].get_address() + (_index % _cols);
 }
@@ -217,7 +218,7 @@ template <typename T>
 // переопределили ->
 const T *Iterator<T>::operator->() const
 {
-    std::shared_ptr<MatrixRow<T>[]> data_ptr = _data_iter.lock();
+    std::shared_ptr<typename Matrix<T>::MatrixRow<T>[]> data_ptr = _data_iter.lock();
 
     return data_ptr[_index / _cols].get_address() + (_index % _cols);
 }
