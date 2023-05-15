@@ -68,74 +68,78 @@ int main()
 {
     std::cout << "Тестирование конструкторов создания матрицы:\n\n";
 
-    // try
-    // {
-    //     std::cout << "Матрица с отрицательными количеством строк:\n";
-    //     Matrix<int> err_m(-1, 2);
-    // }
-    // catch (MatrixExceptions &err)
-    // {
-    //     std::cerr << err.what() << "\n\n";
-    // }
+    try
+    {
+        std::cout << "Матрица с отрицательными количеством строк:\n";
+        Matrix<int> err_m(-1, 2);
+    }
+    catch (MatrixExceptions &err)
+    {
+        std::cerr << err.what() << "\n\n";
+    }
 
     size_t row = 2, col = 3;
     std::cout << "Конструктор с двумя числами типа size_t:\n";
     Matrix<int> my_matrix(row, col, 4);
     std::cout << my_matrix << "\n\n";
 
-    // std::cout << "Проверка конструктора для си матрицы:\n";
-    // int **m = new int *[2];
-    // for (int i = 0; i < 2; ++i)
-    // {
-    //     m[i] = new int[2];
-    //     for (int j = 0; j < 2; ++j)
-    //         m[i][j] = i + j;
-    // }
-    // Matrix<int> my_matrix2{2, 2, m};
-    // std::cout << my_matrix2 << "\n\n";
-    // for (int i = 0; i < 2; ++i)
-    //     delete[] m[i];
-    // delete[] m;
+    std::cout << "Проверка конструктора для си матрицы:\n";
+    int **m = new int *[2];
+    for (int i = 0; i < 2; ++i)
+    {
+        m[i] = new int[2];
+        for (int j = 0; j < 2; ++j)
+            m[i][j] = i + j;
+    }
+    Matrix<int> my_matrix2{2, 2, m};
+    std::cout << my_matrix2 << "\n\n";
 
-    // std::cout << "Проверка конструктора для списка инициализации:\n";
-    // Matrix<int> my_matrix3({{1, 2, 3},
-    //                         {4, 5, 6}});
-    // std::cout << my_matrix3 << "\n\n";
+    for (int i = 0; i < 2; ++i)
+        delete[] m[i];
+    delete[] m;
 
-    // std::cout << "Проверка булевых операторов == и !=:\n";
-    // if (my_matrix != my_matrix3)
-    //     std::cout << "матрицы не равны"
-    //               << "\n\n";
-    // else
-    //     std::cout << "матрицы равны"
-    //               << "\n\n";
+    std::cout << "Проверка конструктора для списка инициализации:\n";
+    Matrix<int> my_matrix3({{1, 2, 3},
+                            {4, 5, 6}});
+    std::cout << my_matrix3 << "\n\n";
 
-    // std::cout << "Получение элемента матрицы:\n\n";
-    // Matrix<string> new_matrix = {{"a1", "a2", "a3"},
-    //                              {"b1", "b2", "b3"},
-    //                              {"c1", "c2", "c3"}};
-    // std::cout << "new_matrix: \n"
-    //           << new_matrix << "\n\n";
+    std::cout << "Проверка булевых операторов == и !=:\n";
+    if (my_matrix != my_matrix3)
+        std::cout << "матрицы не равны"
+                  << "\n\n";
+    else
+        std::cout << "матрицы равны"
+                  << "\n\n";
 
-    // std::cout << "new_matrix[1][1] and new_matrix.get_elem(1, 1)\n";
-    // std::cout << new_matrix[1][1] << " and " << new_matrix.get_elem(1, 1) << "\n\n";
+    std::cout << "Получение элемента матрицы:\n\n";
+    Matrix<string> new_matrix = {{"a1", "a2", "a3"},
+                                 {"b1", "b2", "b3"},
+                                 {"c1", "c2", "c3"}};
+    std::cout << "new_matrix: \n"
+              << new_matrix << "\n\n";
 
-    // std::cout << "new_matrix[1][1] = new1 and new_matrix.get_elem(1, 2) = new2\n";
-    // new_matrix[1][1] = "new1";
-    // new_matrix.get_elem(1, 2) = "new2";
-    // std::cout << "new_matrix[1][1] = " << new_matrix[1][1] << ", new_matrix[1][2] = " << new_matrix[1][2] << "\n\n";
+    std::cout << "new_matrix[1][1] and new_matrix.get_elem(1, 1)\n";
+    std::cout << new_matrix[1][1] << " and " << new_matrix.get_elem(1, 1) << "\n\n";
 
-    // std::cout << "new_matrix::\n";
-    // std::cout << new_matrix << "\n\n";
+    std::cout << "new_matrix[1][1] = new1 and new_matrix.get_elem(1, 2) = new2\n";
+    new_matrix[1][1] = "new1";
+    new_matrix.get_elem(1, 2) = "new2";
+    std::cout << "new_matrix[1][1] = " << new_matrix[1][1] << ", new_matrix[1][2] = " << new_matrix[1][2] << "\n\n";
 
-    // std::cout << "Элементы матрицы new_matrix:\n";
-    // for (const auto &elem : new_matrix)
-    //     std::cout << elem << ' ';
-    // std::cout << "\n\n";
+    std::cout << "Элементы матрицы new_matrix:\n";
+    for (const auto &elem : new_matrix)
+        std::cout << elem << ' ';
+    std::cout << "\n\n";
 
-    // std::cout << "Заполнение элементов матрицы (последняя линия):\n";
-    // new_matrix.fill(new_matrix.end() - static_cast<int>(new_matrix.get_cols()), new_matrix.end(), "0");
-    // std::cout << new_matrix << "\n\n";
+    std::cout << "Проверка определителя матрицы:\n\n";
+    Matrix<double> my_matrix4 = {
+        {2, -1, 0}, {0, 2, -1}, {-1, -1, 1}};
+
+    std::cout << "inverse: " << my_matrix4.inverse() << "\n\n";
+
+    std::cout << "Заполнение элементов матрицы (последняя линия):\n";
+    new_matrix.fill(new_matrix.end() - static_cast<int>(new_matrix.get_cols()), new_matrix.end(), "0");
+    std::cout << new_matrix << "\n\n";
 
     // std::cout << "Константная матрица:\n";
     // const Matrix<string> const_m = {{"11", "12", "13"},
@@ -150,13 +154,13 @@ int main()
     //     std::cout << *it << "; ";
     // std::cout << "\n\n";
 
-    // std::cout << "Математические операции:\n\n";
-    // Matrix<double> math_matrix = {{1, 2, 3, 4},
-    //                               {7, 9, 11, 13},
-    //                               {4, 2, 0, -2},
-    //                               {1, 4, 7, 10}};
-    // std::cout << "math_matrix: \n";
-    // std::cout << math_matrix << "\n\n";
+    std::cout << "Математические операции:\n\n";
+    Matrix<double> math_matrix = {{1, 2, 3, 4},
+                                  {7, 9, 11, 13},
+                                  {4, 2, 0, -2},
+                                  {1, 4, 7, 10}};
+    std::cout << "math_matrix: \n";
+    std::cout << math_matrix << "\n\n";
 
     // std::cout << "Операция: math_matrix += 2.5;\n";
     // math_matrix += 2.5;

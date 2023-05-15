@@ -15,7 +15,7 @@ template <typename T>
 class Matrix : public MatrixBase // наследуется от базового класса
 {
 public:
-    class MatrixRow;  // обьявляем класс MatrixRow
+    class MatrixRow; // обьявляем класс MatrixRow
     friend Iterator<T>;
     friend ConstIterator<T>;
 
@@ -37,12 +37,12 @@ public:
     const MatrixRow operator[](size_t row) const; // методы, возвращающие строку матрицы
 
     // методы для итерации по матрицы (итерация по строкам)
-    // Iterator<T> begin();
-    // Iterator<T> end();
-    // ConstIterator<T> begin() const;
-    // ConstIterator<T> end() const;
-    // ConstIterator<T> cbegin() const;
-    // ConstIterator<T> cend() const;
+    Iterator<T> begin();
+    Iterator<T> end();
+    ConstIterator<T> begin() const;
+    ConstIterator<T> end() const;
+    ConstIterator<T> cbegin() const;
+    ConstIterator<T> cend() const;
 
     bool operator==(const Matrix &matrix) const;
     bool operator!=(const Matrix &matrix) const;
@@ -101,10 +101,10 @@ public:
     double determinant() const;
     Matrix<T> transpose();
     Matrix<T> identity();
-    // Matrix<T> inverse();
-    bool is_square() const;                                               // квадратная ли матрица
-    // void fill(Iterator<T> start, const Iterator<T> &end, const T &value); // заполнение матрицы значениями
-    
+    Matrix<double> inverse();
+    bool is_square() const; // квадратная ли матрица
+    void fill(Iterator<T> start, const Iterator<T> &end, const T &value); // заполнение матрицы значениями
+
     T &get_elem(size_t row, size_t col);
     const T &get_elem(size_t row, size_t col) const;
 
@@ -237,13 +237,13 @@ Matrix<T>::Matrix(Matrix &&matrix) : MatrixBase(matrix._rows, matrix._cols)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-Matrix<T>::MatrixRow Matrix<T>::operator[](size_t row) 
+Matrix<T>::MatrixRow Matrix<T>::operator[](size_t row)
 {
     return _data[row];
 }
 
 template <typename T>
-const Matrix<T>::MatrixRow Matrix<T>::operator[](size_t row) const 
+const Matrix<T>::MatrixRow Matrix<T>::operator[](size_t row) const
 {
     return _data[row];
 }
@@ -272,40 +272,40 @@ std::shared_ptr<typename Matrix<T>::MatrixRow[]> Matrix<T>::_matrix_alloc(size_t
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// template <typename T>
-// Iterator<T> Matrix<T>::begin()
-// {
-//     return Iterator<T>(*this, 0);
-// }
+template <typename T>
+Iterator<T> Matrix<T>::begin()
+{
+    return Iterator<T>(*this, 0);
+}
 
-// template <typename T>
-// Iterator<T> Matrix<T>::end()
-// {
-//     return Iterator<T>(*this, _cols * _rows);
-// }
-// template <typename T>
-// ConstIterator<T> Matrix<T>::begin() const
-// {
-//     return ConstIterator<T>(*this, 0);
-// }
+template <typename T>
+Iterator<T> Matrix<T>::end()
+{
+    return Iterator<T>(*this, _cols * _rows);
+}
+template <typename T>
+ConstIterator<T> Matrix<T>::begin() const
+{
+    return ConstIterator<T>(*this, 0);
+}
 
-// template <typename T>
-// ConstIterator<T> Matrix<T>::end() const
-// {
-//     return ConstIterator<T>(*this, _cols * _rows);
-// }
+template <typename T>
+ConstIterator<T> Matrix<T>::end() const
+{
+    return ConstIterator<T>(*this, _cols * _rows);
+}
 
-// template <typename T>
-// ConstIterator<T> Matrix<T>::cbegin() const
-// {
-//     return ConstIterator<T>(*this, 0);
-// }
+template <typename T>
+ConstIterator<T> Matrix<T>::cbegin() const
+{
+    return ConstIterator<T>(*this, 0);
+}
 
-// template <typename T>
-// ConstIterator<T> Matrix<T>::cend() const
-// {
-//     return ConstIterator<T>(*this, _cols * _rows);
-// }
+template <typename T>
+ConstIterator<T> Matrix<T>::cend() const
+{
+    return ConstIterator<T>(*this, _cols * _rows);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -658,7 +658,6 @@ Matrix<T> operator*(const T &elem, const Matrix<T> &matrix)
 template <typename T>
 double Matrix<T>::determinant() const
 {
-
     if (!is_square())
     {
         throw InvalidState(__FILE__, typeid(*this).name(), __LINE__, "Matrix should be square to get determinant;");
@@ -736,66 +735,56 @@ Matrix<T> Matrix<T>::identity()
     return tmp;
 }
 
-// template <typename T>
-// Matrix<T> Matrix<T>::inverse()
-// {
-//     T temp;
+template <typename T>
+Matrix<double> Matrix<T>::inverse()
+{
+    T temp;
 
-//     Matrix<T> iden = identity();
-//     Matrix<T> tmp(*this);
+    Matrix<T> iden = identity();
+    Matrix<double> tmp(*this);
 
-//     std::cout << "закончил работу\n\n";
+    for (size_t k = 0; k < tmp.get_rows(); k++)
+    {
+        temp = tmp[k][k];
 
-//     for (size_t k = 0; k < tmp.get_rows(); k++)
-//     {
-//         temp = tmp[k][k];
+        for (size_t j = 0; j < tmp.get_rows(); j++)
+        {
+            tmp[k][j] /= temp;
+            iden[k][j] /= temp;
+        }
 
-//         std::cout << "в цикле\n\n";
+        for (size_t i = k + 1; i < tmp.get_rows(); i++)
+        {
+            temp = tmp[i][k];
 
-//         for (size_t j = 0; j < tmp.get_rows(); j++)
-//         {
-//             tmp[k][j] /= temp;
-//             iden[k][j] /= temp;
-//         }
+            for (size_t j = 0; j < tmp.get_rows(); j++)
+            {
+                tmp[i][j] -= tmp[k][j] * temp;
+                iden[i][j] -= iden[k][j] * temp;
+            }
+        }
+    }
 
-//         for (size_t i = k + 1; i < tmp.get_rows(); i++)
-//         {
-//             temp = tmp[i][k];
+    for (int k = tmp.get_rows() - 1; k > 0; k--)
+    {
+        for (int i = k - 1; i >= 0; i--)
+        {
+            temp = tmp[i][k];
 
-//             for (size_t j = 0; j < tmp.get_rows(); j++)
-//             {
-//                 tmp[i][j] -= tmp[k][j] * temp;
-//                 iden[i][j] -= iden[k][j] * temp;
-//             }
-//         }
-//     }
+            for (size_t j = 0; j < tmp.get_rows(); j++)
+            {
+                tmp[i][j] -= tmp[k][j] * temp;
+                iden[i][j] -= iden[k][j] * temp;
+            }
+        }
+    }
 
-//     std::cout << "закончил работу\n\n";
+    for (size_t i = 0; i < tmp.get_rows(); i++)
+        for (size_t j = 0; j < tmp.get_rows(); j++)
+            tmp[i][j] = iden[i][j];
 
-//     for (int k = tmp.get_rows() - 1; k > 0; k--)
-//     {
-//         for (int i = k - 1; i >= 0; i--)
-//         {
-//             temp = tmp[i][k];
-
-//             for (size_t j = 0; j < tmp.get_rows(); j++)
-//             {
-//                 tmp[i][j] -= tmp[k][j] * temp;
-//                 iden[i][j] -= iden[k][j] * temp;
-//             }
-//         }
-//     }
-
-//     std::cout << "закончил работу\n\n";
-
-//     for (size_t i = 0; i < tmp.get_rows(); i++)
-//         for (size_t j = 0; j < tmp.get_rows(); j++)
-//             tmp[i][j] = iden[i][j];
-
-//     std::cout << "закончил работу\n\n";
-
-//     return tmp;
-// }
+    return tmp;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -806,13 +795,13 @@ bool Matrix<T>::is_square() const
     return _rows == _cols;
 }
 
-// template <typename T>
-// // заполнить часть матрицы значениями
-// void Matrix<T>::fill(Iterator<T> start, const Iterator<T> &end, const T &value)
-// {
-//     for (Iterator<T> it = start; it < end; ++it)
-//         *it = value;
-// }
+template <typename T>
+// заполнить часть матрицы значениями
+void Matrix<T>::fill(Iterator<T> start, const Iterator<T> &end, const T &value)
+{
+    for (Iterator<T> it = start; it < end; ++it)
+        *it = value;
+}
 
 template <typename T>
 // получить элемент матрицы
