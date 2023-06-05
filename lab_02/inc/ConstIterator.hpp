@@ -6,6 +6,8 @@
 
 #include "Matrix.hpp"
 
+using string = std::string;
+
 template <typename T> // объявление класса Matrix
 class Matrix;
 
@@ -60,7 +62,6 @@ private:
     size_t _rows = 0;
     size_t _cols = 0;
 
-    // приватные матоды
     void _check_index(const string hint = "");
     void _check_data(const string hint = "") const;
 };

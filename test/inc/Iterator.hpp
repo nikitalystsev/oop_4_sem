@@ -22,38 +22,43 @@ public:
     using value_type = std::remove_const_t<T>;
     using pointer = T *;
     using reference = T &;
+    using iterator = Iterator<T>;
 
+    Iterator(Matrix<T> &matrix, const size_t index = 0);       // конструктор итератора
     Iterator(const Matrix<T> &matrix, const size_t index = 0); // конструктор итератора
-    Iterator(const Iterator<T> &it) = default;                 // конструктор копирования
+    Iterator(const Iterator &it) = default;                    // конструктор копирования
     Iterator(Iterator &&it) noexcept = default;                // конструктор перемещения
 
     ~Iterator() noexcept = default; // деструктор дефолтный
 
     // оператор присваивания
-    Iterator<T> &operator=(const Iterator<T> &it);
+    iterator &operator=(const iterator &it);
+    iterator &operator=(iterator &&it) noexcept;
 
     // сравнение
-    bool operator!=(Iterator<T> const &other) const;
-    bool operator==(Iterator<T> const &other) const;
-    bool operator<(Iterator<T> const &other) const;
-    bool operator<=(Iterator<T> const &other) const;
-    bool operator>(Iterator<T> const &other) const;
-    bool operator>=(Iterator<T> const &other) const;
+    bool operator!=(iterator const &other) const;
+    bool operator==(iterator const &other) const;
+    bool operator<(iterator const &other) const;
+    bool operator<=(iterator const &other) const;
+    bool operator>(iterator const &other) const;
+    bool operator>=(iterator const &other) const;
 
     // перемещение
-    Iterator<T> &operator++();
-    Iterator<T> operator++(int);
-    Iterator<T> &next();
-    Iterator<T> &operator--();
-    Iterator<T> operator--(int);
-    Iterator<T> operator+(const int value) const;
-    Iterator<T> operator-(const int value) const;
-    Iterator<T> &operator+=(const int value);
-    Iterator<T> &operator-=(const int value);
+    iterator &operator++();
+    iterator operator++(int);
+    iterator &next();
+    iterator &operator--();
+    iterator operator--(int);
+    iterator operator+(const size_t value) const;
+    iterator operator-(const size_t value) const;
+    iterator &operator+=(const size_t value);
+    iterator &operator-=(const size_t value);
 
-    // доступitera
+    // доступ
     T &operator*();
     const T &operator*() const;
+    T &value();
+    const T &value() const;
     T *operator->();
     const T *operator->() const;
     T &operator[](const size_t index);
@@ -75,15 +80,5 @@ private:
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename T>
-// конструктор итератора
-Iterator<T>::Iterator(const Matrix<T> &matrix, const size_t index)
-{
-    _index = index;
-    _data_iter = matrix._data;
-    _rows = matrix._rows;
-    _cols = matrix._cols;
-}
 
 #endif // __ITERATOR_HPP__

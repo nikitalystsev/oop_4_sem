@@ -2,7 +2,8 @@ $(shell mkdir -p out)
 
 CC := g++
 
-CFLAGS := -Wall -g -Werror -std=c++20 -Iinc
+CFLAGS := -std=c++20 -Wall -Werror -pedantic -Wextra -Wfloat-equal -Wfloat-conversion -Iinc -Wvla
+
 
 PREF_SRC := ./src/
 PREF_INC := ./inc/
