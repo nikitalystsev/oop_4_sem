@@ -4,15 +4,15 @@
 #include <iostream>
 #include <memory>
 
-#include "Matrix.hpp"
+#include "Concepts.hpp"
 #include "MatrixExceptions.hpp"
 
 using string = std::string;
 
-template <typename T> // объявление класса Matrix
+template <MatrixType T> // объявление класса Matrix
 class Matrix;
 
-template <typename T>
+template <MatrixType T>
 class Iterator
 {
 public:
@@ -78,7 +78,5 @@ private:
     void _check_index(const string hint = "");
     void _check_data(const string hint = "") const;
 };
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif // __ITERATOR_HPP__

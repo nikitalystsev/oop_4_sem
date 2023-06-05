@@ -4,14 +4,15 @@
 #include <iostream>
 #include <memory>
 
-#include "Matrix.hpp"
+#include "Concepts.hpp"
+#include "MatrixExceptions.hpp"
 
 using string = std::string;
 
-template <typename T> // объявление класса Matrix
+template <MatrixType T> // объявление класса Matrix
 class Matrix;
 
-template <typename T>
+template <MatrixType T>
 class ConstIterator
 {
 public:

@@ -2,97 +2,97 @@
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// // все конструкторы будут шаблонными, чтобы элементом матрицы мог быть любой тип данных
-// template <typename T>
-// // первый конструктор с параметрами. Вызывается конструктор базового класса
-// Matrix<T>::Matrix(const size_t rows, const size_t cols) : MatrixBase(rows, cols)
-// {
-//     _data = _matrix_alloc(rows, cols); // выделяем память под матрицу
-// }
+// все конструкторы будут шаблонными, чтобы элементом матрицы мог быть любой тип данных
+template <typename T>
+// первый конструктор с параметрами. Вызывается конструктор базового класса
+Matrix<T>::Matrix(const size_t rows, const size_t cols) : MatrixBase(rows, cols)
+{
+    this->_data = _matrix_alloc(rows, cols); // выделяем память под матрицу
+}
 
-// template <typename T>
-// // конструктор заполнения матрицы переданным значением. Вызывается конструктор базового класса
-// Matrix<T>::Matrix(const size_t rows, const size_t cols, const T &filler) : MatrixBase(rows, cols)
-// {
-//     _data = _matrix_alloc(rows, cols); // выделяем память под матрицу
+template <typename T>
+// конструктор копирования. Вызывается конструктор бзового класса
+Matrix<T>::Matrix(const Matrix<T> &matrix) : MatrixBase(matrix._rows, matrix._cols)
+{
+    this->_data = _matrix_alloc(matrix._rows, matrix._cols); // выделяем память под матрицу
 
-//     for (size_t i = 0; i < rows; ++i)
-//         for (size_t j = 0; j < cols; ++j)
-//             _data[i][j] = filler;
-// }
+    for (size_t i = 0; i < _rows; ++i)
+        for (size_t j = 0; j < _cols; ++j)
+            this->_data[i][j] = matrix[i][j];
+}
 
-// template <typename T>
-// void _check_ptr(T ptr)
-// {
-//     if (ptr)
-//         return;
+template <typename T>
+// конструктор перемещения. Вызывается конструктор бзового класса
+Matrix<T>::Matrix(Matrix &&matrix) : MatrixBase(matrix._rows, matrix._cols)
+{
+    this->_data = matrix._data;
+}
 
-//     throw InvalidArgument(__FILE__, "Non-class", __LINE__, "nullptr as a ptr of c-matrix");
-// }
+template <typename T>
+// конструктор заполнения матрицы переданным значением. Вызывается конструктор базового класса
+Matrix<T>::Matrix(const size_t rows, const size_t cols, const T &filler) : MatrixBase(rows, cols)
+{
+    this->_data = _matrix_alloc(rows, cols); // выделяем память под матрицу
 
-// template <typename T>
-// // конструктор создания матрицы на основе си матрицы. Вызывается конструктор базового класса
-// Matrix<T>::Matrix(const size_t rows, const size_t cols, T **matrix) : MatrixBase(rows, cols)
-// {
-//     _check_ptr(matrix); // проверка указателя
+    for (size_t i = 0; i < rows; ++i)
+        for (size_t j = 0; j < cols; ++j)
+            this->_data[i][j] = filler;
+}
 
-//     _data = _matrix_alloc(rows, cols); // выделяем память под матрицу
+template <typename T>
+void _check_ptr(T ptr)
+{
+    if (ptr)
+        return;
 
-//     for (size_t i = 0; i < rows; ++i)
-//     {
-//         // позже добавить проверку указателя
-//         for (size_t j = 0; j < cols; ++j)
-//             _data[i][j] = matrix[i][j];
-//     }
-// }
+    throw InvalidArgument(__FILE__, "Non-class", __LINE__, "nullptr как указатель c-матрицы");
+}
 
-// template <typename T>
-// // конструктор создания матрицы на основе списка инициализации.
-// // Конструктор базового класса не вызывается
-// Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> init_list)
-// {
-//     size_t rows = init_list.size();          // количество строк
-//     size_t cols = init_list.begin()->size(); // количество столбцов
+template <typename T>
+// конструктор создания матрицы на основе си матрицы. Вызывается конструктор базового класса
+Matrix<T>::Matrix(const size_t rows, const size_t cols, T **matrix) : MatrixBase(rows, cols)
+{
+    _check_ptr(matrix); // проверка указателя
 
-//     for (const auto &ilist : init_list)
-//         if (ilist.size() != cols)
-//         {
-//             throw InvalidArgument(__FILE__, typeid(*this).name(),
-//                                   __LINE__, "Bad initializer list");
-//         }
+    this->_data = _matrix_alloc(rows, cols); // выделяем память под матрицу
 
-//     _data = _matrix_alloc(rows, cols); // выделяем память под матрицу
+    for (size_t i = 0; i < rows; ++i)
+    {
+        // позже добавить проверку указателя
+        for (size_t j = 0; j < cols; ++j)
+            this->_data[i][j] = matrix[i][j];
+    }
+}
 
-//     _rows = rows;
-//     _cols = cols;
+template <typename T>
+// конструктор создания матрицы на основе списка инициализации.
+// Конструктор базового класса не вызывается
+Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> init_list)
+{
+    size_t rows = init_list.size();          // количество строк
+    size_t cols = init_list.begin()->size(); // количество столбцов
 
-//     size_t i = 0;
+    for (const auto &ilist : init_list)
+        if (ilist.size() != cols)
+        {
+            throw InvalidArgument(__FILE__, typeid(*this).name(),
+                                  __LINE__, "Некорректный список инициализации");
+        }
 
-//     for (const auto &i_list : init_list)
-//         for (const auto &elem : i_list)
-//         {
-//             _data[i / cols][i % cols] = elem;
-//             ++i;
-//         }
-// }
+    this->_data = _matrix_alloc(rows, cols); // выделяем память под матрицу
 
-// template <typename T>
-// // конструктор копирования. Вызывается конструктор бзового класса
-// Matrix<T>::Matrix(const Matrix<T> &matrix) : MatrixBase(matrix._rows, matrix._cols)
-// {
-//     _data = _matrix_alloc(matrix._rows, matrix._cols); // выделяем память под матрицу
+    this->_rows = rows;
+    this->_cols = cols;
 
-//     for (size_t i = 0; i < _rows; ++i)
-//         for (size_t j = 0; j < _cols; ++j)
-//             _data[i][j] = matrix[i][j];
-// }
+    size_t i = 0;
 
-// template <typename T>
-// // конструктор перемещения. Вызывается конструктор бзового класса
-// Matrix<T>::Matrix(Matrix &&matrix) : MatrixBase(matrix._rows, matrix._cols)
-// {
-//     _data = matrix._data;
-// }
+    for (const auto &i_list : init_list)
+        for (const auto &elem : i_list)
+        {
+            this->_data[i / cols][i % cols] = elem;
+            ++i;
+        }
+}
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -110,25 +110,25 @@
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// template <typename T>
-// std::shared_ptr<typename Matrix<T>::MatrixRow[]> Matrix<T>::_matrix_alloc(size_t rows, size_t cols)
-// {
-//     std::shared_ptr<MatrixRow[]> data = nullptr;
+template <typename T>
+std::shared_ptr<typename Matrix<T>::MatrixRow[]> Matrix<T>::_matrix_alloc(const size_t rows, const size_t cols)
+{
+    std::shared_ptr<MatrixRow[]> data = nullptr;
 
-//     try
-//     {
-//         data.reset(new MatrixRow[rows]);
+    try
+    {
+        data.reset(new MatrixRow[rows]);
 
-//         for (size_t i = 0; i < rows; i++)
-//             data[i].reset(new T[cols], cols);
-//     }
-//     catch (std::bad_alloc &err)
-//     {
-//         throw MemoryError(__FILE__, typeid(*this).name(), __LINE__, "_matrix_alloc function error");
-//     }
+        for (size_t i = 0; i < rows; i++)
+            data[i].reset(new T[cols], cols);
+    }
+    catch (std::bad_alloc &err)
+    {
+        throw MemoryError(__FILE__, typeid(*this).name(), __LINE__, "Ошибка выделения памяти в функции _matrix_alloc");
+    }
 
-//     return data;
-// }
+    return data;
+}
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -191,29 +191,30 @@
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-// template <typename T>
-// Matrix<T> &Matrix<T>::operator=(const Matrix<T> &matrix)
-// {
-//     _data = _matrix_alloc(matrix._rows, matrix._cols); // выделяем память под матрицу
+template <typename T>
+// операторы присваивания
+Matrix<T> &Matrix<T>::operator=(const Matrix<T> &matrix)
+{
+    this->_data = _matrix_alloc(matrix._rows, matrix._cols); // выделяем память под матрицу
 
-//     _rows = matrix._rows, _cols = matrix._cols;
+    this->_rows = matrix._rows, this->_cols = matrix._cols;
 
-//     for (size_t i = 0; i < _rows; ++i)
-//         for (size_t j = 0; j < _cols; ++j)
-//             _data[i][j] = matrix[i][j];
+    for (size_t i = 0; i < _rows; ++i)
+        for (size_t j = 0; j < _cols; ++j)
+            this->_data[i][j] = matrix[i][j];
 
-//     return *this;
-// }
+    return *this;
+}
 
-// template <typename T>
-// Matrix<T> &Matrix<T>::operator=(Matrix<T> &&matrix)
-// {
-//     _data = matrix._data;
-//     _rows = matrix._rows;
-//     _cols = matrix._cols;
+template <typename T>
+Matrix<T> &Matrix<T>::operator=(Matrix<T> &&matrix) noexcept
+{
+    _data = matrix._data;
+    _rows = matrix._rows;
+    _cols = matrix._cols;
 
-//     return *this;
-// }
+    return *this;
+}
 
 // template <typename T>
 // Matrix<T> &Matrix<T>::operator=(std::initializer_list<std::initializer_list<T>> init_list)

@@ -1,7 +1,7 @@
 #include "Iterator.hpp"
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
 // конструктор итератора
 Iterator<T>::Iterator(Matrix<T> &matrix, const size_t index)
 {
@@ -11,7 +11,7 @@ Iterator<T>::Iterator(Matrix<T> &matrix, const size_t index)
     this->_cols = matrix._cols;
 }
 
-template <typename T>
+template <MatrixType T>
 // конструктор итератора
 Iterator<T>::Iterator(const Matrix<T> &matrix, const size_t index)
 {
@@ -23,7 +23,7 @@ Iterator<T>::Iterator(const Matrix<T> &matrix, const size_t index)
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор присваивания =
 Iterator<T>::iterator &Iterator<T>::operator=(const Iterator<T>::iterator &it)
 {
@@ -35,7 +35,7 @@ Iterator<T>::iterator &Iterator<T>::operator=(const Iterator<T>::iterator &it)
     return *this;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор присваивания =
 Iterator<T>::iterator &Iterator<T>::operator=(Iterator<T>::iterator &&it) noexcept
 {
@@ -49,42 +49,42 @@ Iterator<T>::iterator &Iterator<T>::operator=(Iterator<T>::iterator &&it) noexce
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
 // переопределили !=
 bool Iterator<T>::operator!=(Iterator<T>::iterator const &other) const
 {
     return this->_index != other._index;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили ==
 bool Iterator<T>::operator==(Iterator<T>::iterator const &other) const
 {
     return this->_index == other._index;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили <
 bool Iterator<T>::operator<(Iterator<T>::iterator const &other) const
 {
     return this->_index < other._index;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили <=
 bool Iterator<T>::operator<=(Iterator<T>::iterator const &other) const
 {
     return this->_index <= other._index;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили >
 bool Iterator<T>::operator>(Iterator<T>::iterator const &other) const
 {
     return this->_index > other._index;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили >=
 bool Iterator<T>::operator>=(Iterator<T>::iterator const &other) const
 {
@@ -93,7 +93,7 @@ bool Iterator<T>::operator>=(Iterator<T>::iterator const &other) const
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
 // переопределили префиксный инкремент
 Iterator<T>::iterator &Iterator<T>::operator++()
 {
@@ -103,7 +103,7 @@ Iterator<T>::iterator &Iterator<T>::operator++()
     return *this;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили постфиксный инкремент
 Iterator<T>::iterator Iterator<T>::operator++(int)
 {
@@ -114,14 +114,14 @@ Iterator<T>::iterator Iterator<T>::operator++(int)
     return it;
 }
 
-template <typename T>
+template <MatrixType T>
 // next
 Iterator<T>::iterator &Iterator<T>::next()
 {
     return operator++();
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили префиксный декремент
 Iterator<T>::iterator &Iterator<T>::operator--()
 {
@@ -131,7 +131,7 @@ Iterator<T>::iterator &Iterator<T>::operator--()
     return *this;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили постфиксный декремент
 Iterator<T>::iterator Iterator<T>::operator--(int)
 {
@@ -142,7 +142,7 @@ Iterator<T>::iterator Iterator<T>::operator--(int)
     return it;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор +
 Iterator<T>::iterator Iterator<T>::operator+(const size_t value) const
 {
@@ -161,14 +161,14 @@ Iterator<T>::iterator Iterator<T>::operator+(const size_t value) const
     return it;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор -
 Iterator<T>::iterator Iterator<T>::operator-(const size_t value) const
 {
     return operator+(-value);
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор +=
 Iterator<T>::iterator &Iterator<T>::operator+=(const size_t value)
 {
@@ -185,7 +185,7 @@ Iterator<T>::iterator &Iterator<T>::operator+=(const size_t value)
     return *this;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор -=
 Iterator<T>::iterator &Iterator<T>::operator-=(const size_t value)
 {
@@ -194,7 +194,7 @@ Iterator<T>::iterator &Iterator<T>::operator-=(const size_t value)
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор разыменования *
 T &Iterator<T>::operator*()
 {
@@ -206,7 +206,7 @@ T &Iterator<T>::operator*()
     return data_ptr[this->_index / this->_cols][this->_index % this->_cols];
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор разыменования *
 const T &Iterator<T>::operator*() const
 {
@@ -218,19 +218,19 @@ const T &Iterator<T>::operator*() const
     return data_ptr[this->_index / this->_cols][this->_index % this->_cols];
 }
 
-template <typename T>
+template <MatrixType T>
 T &Iterator<T>::value()
 {
     return operator*();
 }
 
-template <typename T>
+template <MatrixType T>
 const T &Iterator<T>::value() const
 {
     return operator*();
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили ->
 T *Iterator<T>::operator->()
 {
@@ -242,7 +242,7 @@ T *Iterator<T>::operator->()
     return data_ptr[this->_index / this->_cols].get_address() + (this->_index % _cols);
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили ->
 const T *Iterator<T>::operator->() const
 {
@@ -256,7 +256,7 @@ const T *Iterator<T>::operator->() const
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
 // переопределили []
 T &Iterator<T>::operator[](const size_t index)
 {
@@ -274,7 +274,7 @@ T &Iterator<T>::operator[](const size_t index)
     return data_ptr[index / this->_cols][index % this->_cols];
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили []
 const T &Iterator<T>::operator[](const size_t index) const
 {
@@ -294,19 +294,19 @@ const T &Iterator<T>::operator[](const size_t index) const
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
 Iterator<T>::operator bool() const
 {
     return this->_data_iter.expired();
 }
 
-template <typename T>
+template <MatrixType T>
 bool Iterator<T>::is_end() const
 {
     return this->_index == this->_rows * this->_cols;
 }
 
-template <typename T>
+template <MatrixType T>
 bool Iterator<T>::is_valid_data() const
 {
     return !this->_data_iter.expired();
@@ -314,7 +314,7 @@ bool Iterator<T>::is_valid_data() const
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
 // метод для проверки индекса в итераторе
 void Iterator<T>::_check_index(const string hint)
 {
@@ -324,7 +324,7 @@ void Iterator<T>::_check_index(const string hint)
     throw IteratorIndexError(__FILE__, typeid(*this).name(), __LINE__, hint);
 }
 
-template <typename T>
+template <MatrixType T>
 // метод проверяет данные на валидность
 void Iterator<T>::_check_data(const string hint) const
 {

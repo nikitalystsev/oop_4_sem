@@ -5,13 +5,14 @@
 #include <memory>
 #include <cmath>
 
+#include "Concepts.hpp"
 #include "MatrixBase.hpp" // класс матрицы будет наследоваться от базового класса
 #include "Iterator.hpp"
 #include "ConstIterator.hpp"
 #include "MatrixExceptions.hpp"
 
 // класс будет шаблонным, то есть тип элемента матрицы будет определяться при создании
-template <typename T>
+template <MatrixType T>
 class Matrix : public MatrixBase // наследуется от базового класса
 {
 public:
@@ -20,16 +21,28 @@ public:
     // friend ConstIterator<T>;
 
 public:
+    // определили алиасы типов
     using value_type = T;
+    using size_type = size_t;
+    using iterator = Iterator<T>;
+    using const_iterator = ConstIterator<T>;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+    using difference_type = typename iterator::difference_type;
+    using reference = typename iterator::reference;
+    using const_reference = typename const_iterator::reference;
+    using pointer = typename iterator::pointer;
+    using const_pointer = typename const_iterator::pointer;
 
     // различные конструкторы класса Matrix
     Matrix() = default;
     explicit Matrix(const size_t rows = 0, const size_t cols = 0);
+    explicit Matrix(const Matrix<T> &matrix); // конструктор копирования
+    Matrix(Matrix<T> &&matrix);               // конструктор перемещения
+
     Matrix(const size_t rows, const size_t cols, const T &filler);     // конструктор для заполнения матрицы filler-ом
     Matrix(const size_t rows, const size_t columns, T **matrix);       // создание матрицы на основе си матрицы
     Matrix(std::initializer_list<std::initializer_list<T>> init_list); // конструктор по списку инициализации
-    explicit Matrix(const Matrix<T> &matrix);                          // конструктор копирования
-    Matrix(Matrix<T> &&matrix);                                        // конструктор перемещения
 
     ~Matrix() noexcept = default; // деструктор класса по умолчанию
 
@@ -47,9 +60,9 @@ public:
     // bool operator==(const Matrix &matrix) const;
     // bool operator!=(const Matrix &matrix) const;
 
-    // Matrix<T> &operator=(const Matrix<T> &matrix);
-    // Matrix<T> &operator=(Matrix<T> &&matrix);
-    // Matrix<T> &operator=(std::initializer_list<std::initializer_list<T>> init_list);
+    Matrix<T> &operator=(const Matrix<T> &matrix);
+    Matrix<T> &operator=(Matrix<T> &&matrix) noexcept;
+    Matrix<T> &operator=(std::initializer_list<std::initializer_list<T>> init_list);
 
     // // математические операции с матрицами
     // template <typename T2>
@@ -110,8 +123,8 @@ public:
 
 private:
     // // атрибуты _rows и _cols не объявляю, поскольку они есть в базовом классе
-    // std::shared_ptr<MatrixRow[]> _data;                                               // собственно сами данные (массив указателей на строки)
-    // std::shared_ptr<MatrixRow[]> _matrix_alloc(const size_t rows, const size_t cols); // метод выделяет память под матрицы
+    std::shared_ptr<typename Matrix<T>::MatrixRow[]> _data;                                               // собственно сами данные (массив указателей на строки)
+    std::shared_ptr<typename Matrix<T>::MatrixRow[]> _matrix_alloc(const size_t rows, const size_t cols); // метод выделяет память под матрицы
 
     // void _check_index(size_t pos, size_t limit) const;
     // void _check_sizes(const Matrix &matrix) const;
