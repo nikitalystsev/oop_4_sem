@@ -307,7 +307,7 @@ template <typename T>
 // метод для проверки индекса в итераторе
 void Iterator<T>::_check_index(const string hint)
 {
-    if (_index < _rows * _cols)
+    if (this->_index < this->_rows * this->_cols)
         return;
 
     throw IteratorIndexError(__FILE__, typeid(*this).name(), __LINE__, hint);
