@@ -10,7 +10,7 @@ int main()
 
     // Matrix<float> matrix1; нельзя
     Matrix<int> matrix2(2, 2);
-    Matrix<int> matrix3(2, 2, 5);
+    Matrix<int> matrix3(2, 3, 5);
     int **m = new int *[2];
     for (int i = 0; i < 2; ++i)
     {
@@ -23,10 +23,44 @@ int main()
     for (int i = 0; i < 2; ++i)
         delete[] m[i];
     delete[] m;
-    Matrix<int> matrix5({{1, 2, 3},
-                         {4, 5, 6}});
-    // try
-    // {
+    Matrix<float> matrix5({{1, 2, 3},
+                           {4, 5, 6},
+                           {7, 8, 9}});
+    Matrix<string> matrix6(2, 2, "hello");
+    Matrix<string> matrix7(2, 2, "bye");
+
+    std::cout << "matrix7:\n"
+              << matrix7 << "\n\n";
+
+    matrix7 = matrix6;
+
+    std::cout << "matrix7:\n"
+              << matrix7 << "\n\n";
+
+    std::cout << "Проверка булевых операторов == и !=:\n";
+    if (matrix4 != matrix5)
+        std::cout << "матрицы не равны"
+                  << "\n\n";
+    else
+        std::cout << "матрицы равны"
+                  << "\n\n";
+
+    matrix5 += matrix5 + 1.2;
+
+    matrix5 -= matrix5 - 1.2;
+
+    matrix5 -= matrix5 - 1.2;
+
+    matrix5 *= matrix5 + 4;
+
+    matrix5.determinant();
+    matrix5.identity();
+    std::cout << matrix3.identity() << "\n\n";
+    std::cout << std::equality_comparable_with<int, float> << std::endl;
+
+
+    // trym
+    // {m
     //     std::cout << "Матрица с отрицательными количеством строк:\n";
     //     Matrix<int> err_m(-1, 2);
     // }
