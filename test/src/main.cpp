@@ -26,6 +26,13 @@ int main()
     Matrix<float> matrix5({{1, 2, 3},
                            {4, 5, 6},
                            {7, 8, 9}});
+
+    Matrix<float>::const_reverse_iterator rit = matrix5.rcbegin();
+
+    // Итерация по вектору в прямом порядке
+    for (; rit != matrix5.rcend(); ++rit)
+        std::cout << *rit << " ";
+
     Matrix<string> matrix6(2, 2, "hello");
     Matrix<string> matrix7(2, 2, "bye");
 
@@ -45,19 +52,30 @@ int main()
         std::cout << "матрицы равны"
                   << "\n\n";
 
-    matrix5 += matrix5 + 1.2;
+    // matrix5 += matrix5 + 1.2;
 
-    matrix5 -= matrix5 - 1.2;
+    // matrix5 -= matrix5 - 1.2;
 
-    matrix5 -= matrix5 - 1.2;
+    // matrix5 -= matrix5 - 1.2;
 
-    matrix5 *= matrix5 + 4;
+    // matrix5 *= matrix5 + 4;
 
     matrix5.determinant();
-    matrix5.identity();
-    std::cout << matrix3.identity() << "\n\n";
+    // matrix5.identity();
+    // std::cout << matrix3.identity() << "\n\n";
     std::cout << std::equality_comparable_with<int, float> << std::endl;
 
+    Matrix<int> matrix{{1, 2, 6}, {3, 4, 5}};
+
+    for (auto &x : matrix)
+        std::cout << x << ' ';
+
+    std::cout << std::endl;
+
+    Matrix<float> matrix_1(matrix5);
+
+    for (auto &x : matrix_1)
+        std::cout << x << ' ';
 
     // trym
     // {m

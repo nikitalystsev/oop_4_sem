@@ -17,8 +17,8 @@ class Matrix : public MatrixBase // наследуется от базового
 {
 public:
     class MatrixRow; // обьявляем класс MatrixRow
-    // friend Iterator<T>;
-    // friend ConstIterator<T>;
+    friend Iterator<T>;
+    friend ConstIterator<T>;
 
 public:
     // определили алиасы типов
@@ -52,7 +52,7 @@ public:
 
     MatrixRow operator[](const size_t row);             // методы, возвращающие строку матрицы
     const MatrixRow operator[](const size_t row) const; // методы, возвращающие строку матрицы
-    
+
     // // методы для итерации по матрицы (итерация по строкам)
     iterator begin();
     iterator end();
@@ -158,6 +158,7 @@ public:
     Matrix<T> inverse()
         requires MatrixFloatPoint<T>;
     bool is_square() const; // квадратная ли матрица
+    size_t size() const;
     // void fill(Iterator<T> start, const Iterator<T> &end, const T &value); // заполнение матрицы значениями
 
     T &get_elem(size_t row, size_t col);
@@ -341,7 +342,7 @@ Matrix<T>::iterator Matrix<T>::begin()
 template <MatrixType T>
 Matrix<T>::iterator Matrix<T>::end()
 {
-    return Iterator<T>(*this, _cols * _rows);
+    return Iterator<T>(*this, this->size());
 }
 
 template <MatrixType T>
@@ -353,7 +354,7 @@ Matrix<T>::const_iterator Matrix<T>::begin() const
 template <MatrixType T>
 Matrix<T>::const_iterator Matrix<T>::end() const
 {
-    return ConstIterator<T>(*this, _cols * _rows);
+    return ConstIterator<T>(*this, this->size());
 }
 
 template <MatrixType T>
@@ -365,43 +366,43 @@ Matrix<T>::const_iterator Matrix<T>::cbegin() const
 template <MatrixType T>
 Matrix<T>::const_iterator Matrix<T>::cend() const
 {
-    return ConstIterator<T>(*this, _rows * _cols);
+    return ConstIterator<T>(*this, this->size());
 }
 
 template <MatrixType T>
 Matrix<T>::reverse_iterator Matrix<T>::rend()
 {
-    return std::reverse_iterator(Iterator<T>(*this, -1));
+    return std::reverse_iterator(Iterator<T>(*this, 0));
 }
 
 template <MatrixType T>
 Matrix<T>::reverse_iterator Matrix<T>::rbegin()
 {
-    return std::reverse_iterator(Iterator<T>(*this, this->size() - 1));
+    return std::reverse_iterator(Iterator<T>(*this, this->size()));
 }
 
 template <MatrixType T>
 Matrix<T>::const_reverse_iterator Matrix<T>::rend() const
 {
-    return std::reverse_iterator(Iterator<T>(*this, -1));
+    return std::reverse_iterator(Iterator<T>(*this, 0));
 }
 
 template <MatrixType T>
 Matrix<T>::const_reverse_iterator Matrix<T>::rbegin() const
 {
-    return std::reverse_iterator(Iterator<T>(*this, this->size() - 1));
+    return std::reverse_iterator(Iterator<T>(*this, this->size()));
 }
 
 template <MatrixType T>
 Matrix<T>::const_reverse_iterator Matrix<T>::rcend() const
 {
-    return std::reverse_iterator(ConstIterator<T>(*this, -1));
+    return std::reverse_iterator(ConstIterator<T>(*this, 0));
 }
 
 template <MatrixType T>
 Matrix<T>::const_reverse_iterator Matrix<T>::rcbegin() const
 {
-    return std::reverse_iterator(ConstIterator<T>(*this, this->size() - 1));
+    return std::reverse_iterator(ConstIterator<T>(*this, this->size()));
 }
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -925,6 +926,13 @@ template <MatrixType T>
 bool Matrix<T>::is_square() const
 {
     return _rows == _cols;
+}
+
+template <MatrixType T>
+// размер матрицы
+size_t Matrix<T>::size() const
+{
+    return _rows * _cols;
 }
 
 // template <MatrixType T>
