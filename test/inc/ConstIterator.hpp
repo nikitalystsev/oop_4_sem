@@ -44,15 +44,15 @@ public:
     bool operator>=(iterator const &other) const;
 
     // перемещение
-    iterator &operator++() const;
-    iterator operator++(int) const;
+    iterator &operator++();
+    iterator operator++(int);
     iterator &next() const;
     iterator &operator--();
     iterator operator--(int) const;
     iterator operator+(const size_t value) const;
     iterator operator-(const size_t value) const;
-    iterator &operator+=(const size_t value) const;
-    iterator &operator-=(const size_t value) const;
+    iterator &operator+=(const size_t value);
+    iterator &operator-=(const size_t value);
 
     // // доступ
     const T &operator*() const;
@@ -169,7 +169,7 @@ bool ConstIterator<T>::operator>=(ConstIterator<T>::iterator const &other) const
 
 template <MatrixType T>
 // переопределили префиксный инкремент
-ConstIterator<T>::iterator &ConstIterator<T>::operator++() const
+ConstIterator<T>::iterator &ConstIterator<T>::operator++()
 {
     if (this->_index < this->_cols * this->_rows)
         ++_index;
@@ -179,7 +179,7 @@ ConstIterator<T>::iterator &ConstIterator<T>::operator++() const
 
 template <MatrixType T>
 // переопределили постфиксный инкремент
-ConstIterator<T>::iterator ConstIterator<T>::operator++(int) const
+ConstIterator<T>::iterator ConstIterator<T>::operator++(int)
 {
     iterator it(*this);
 
@@ -242,7 +242,7 @@ ConstIterator<T>::iterator ConstIterator<T>::operator-(const size_t value) const
 
 template <MatrixType T>
 // переопределили оператор +=
-ConstIterator<T>::iterator &ConstIterator<T>::operator+=(const size_t value) const
+ConstIterator<T>::iterator &ConstIterator<T>::operator+=(const size_t value)
 {
     if (value < 0 && this->_index < -value)
         this->_index = 0;
@@ -259,7 +259,7 @@ ConstIterator<T>::iterator &ConstIterator<T>::operator+=(const size_t value) con
 
 template <MatrixType T>
 // переопределили оператор -=
-ConstIterator<T>::iterator &ConstIterator<T>::operator-=(const size_t value) const
+ConstIterator<T>::iterator &ConstIterator<T>::operator-=(const size_t value)
 {
     return operator+=(-value);
 }
