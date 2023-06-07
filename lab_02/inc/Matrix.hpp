@@ -38,15 +38,15 @@ public:
     Matrix() = default;
     explicit Matrix(const size_t rows = 0, const size_t cols = 0);
     explicit Matrix(const Matrix<T> &matrix); // конструктор копирования
-    Matrix(Matrix<T> &&matrix);               // конструктор перемещения
+    Matrix(Matrix<T> &&matrix) noexcept;      // конструктор перемещения
 
     Matrix(const size_t rows, const size_t cols, const T &filler);     // конструктор для заполнения матрицы filler-ом
     Matrix(const size_t rows, const size_t cols, T **matrix);          // создание матрицы на основе си матрицы
     Matrix(std::initializer_list<std::initializer_list<T>> init_list); // конструктор по списку инициализации
 
-    template <MatrixType U>
-    explicit Matrix(const Matrix<U> &matrix)
-        requires CreateByOtherType<T, U>;
+    template <MatrixType T2>
+    explicit Matrix(const Matrix<T2> &matrix)
+        requires PermittedType<T, T2>;
 
     ~Matrix() noexcept = default; // деструктор класса по умолчанию
 
@@ -224,7 +224,7 @@ Matrix<T>::Matrix(const Matrix<T> &matrix) : MatrixBase(matrix._rows, matrix._co
 
 template <MatrixType T>
 // конструктор перемещения. Вызывается конструктор бзового класса
-Matrix<T>::Matrix(Matrix &&matrix) : MatrixBase(matrix._rows, matrix._cols)
+Matrix<T>::Matrix(Matrix<T> &&matrix) noexcept : MatrixBase(matrix._rows, matrix._cols)
 {
     this->_data = matrix._data;
 }
@@ -295,6 +295,18 @@ Matrix<T>::Matrix(std::initializer_list<std::initializer_list<T>> init_list)
         }
 }
 
+template <MatrixType T>
+template <MatrixType T2>
+Matrix<T>::Matrix(const Matrix<T2> &matrix)
+    requires PermittedType<T, T2>
+    : MatrixBase(matrix.get_rows(), matrix.get_cols())
+{
+    this->_data = _matrix_alloc(matrix.get_rows(), matrix.get_cols()); // выделяем память под матрицу
+
+    for (size_t i = 0; i < _rows; ++i)
+        for (size_t j = 0; j < _cols; ++j)
+            this->_data[i][j] = matrix[i][j];
+}
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <MatrixType T>

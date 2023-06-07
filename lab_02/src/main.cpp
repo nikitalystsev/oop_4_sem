@@ -1,7 +1,14 @@
 #include <iostream>
 #include <string>
+#include <concepts>
+// #include "Concepts.hpp"
 #include "Matrix.hpp"
 
+template <typename T, typename T2>
+concept PemittedType = requires {
+    std::convertible_to<int, string>;
+};
+// concept PemittedType = std::convertible_to<int, string>;
 using string = std::string;
 
 int main()
@@ -10,7 +17,8 @@ int main()
 
     // Matrix<float> matrix1; нельзя
     Matrix<int> matrix2(2, 2);
-    Matrix<int> matrix3(2, 3, 5);
+    Matrix<int> matrix3(2, 3, 5); // филлером
+
     int **m = new int *[2];
     for (int i = 0; i < 2; ++i)
     {
@@ -18,39 +26,52 @@ int main()
         for (int j = 0; j < 2; ++j)
             m[i][j] = i + j;
     }
-    Matrix<int> matrix4{2, 2, m};
+    Matrix<int> matrix4{2, 2, m}; // на основе си-матрицы
 
     for (int i = 0; i < 2; ++i)
         delete[] m[i];
     delete[] m;
+
     Matrix<float> matrix5({{1, 2, 3},
                            {4, 5, 6},
-                           {7, 8, 9}});
+                           {7, 8, 9}}); // список инициализации
 
-    Matrix<float>::const_reverse_iterator rit = matrix5.rcbegin();
+    std::cout << std::convertible_to<int, string> << "\n\n";
+    std::cout << std::convertible_to<string, int> << "\n\n";
+    std::cout << PemittedType<int, string> << "\n\n";
+    std::cout << PemittedType<string, int> << "\n\n";
 
-    // Итерация по вектору в прямом порядке
-    for (; rit != matrix5.rcend(); ++rit)
-        std::cout << *rit << " ";
+    Matrix<int> matrix6(matrix3); // копирование
+    Matrix<string> matrix7(2, 3, "hi");
+    Matrix<string> matrix8(matrix3);
+    // for (auto &x : matrix8)
+    //     std::cout << x << ' ';
 
-    Matrix<string> matrix6(2, 2, "hello");
-    Matrix<string> matrix7(2, 2, "bye");
+    // std::cout << matrix3 << "\n\n";
+    // Matrix<float>::const_reverse_iterator rit = matrix5.rcbegin();
 
-    std::cout << "matrix7:\n"
-              << matrix7 << "\n\n";
+    // // Итерация по вектору в прямом порядке
+    // for (; rit != matrix5.rcend(); ++rit)
+    //     std::cout << *rit << " ";
 
-    matrix7 = matrix6;
+    // Matrix<string> matrix6(2, 2, "hello");
+    // Matrix<string> matrix7(2, 2, "bye");
 
-    std::cout << "matrix7:\n"
-              << matrix7 << "\n\n";
+    // std::cout << "matrix7:\n"
+    //           << matrix7 << "\n\n";
 
-    std::cout << "Проверка булевых операторов == и !=:\n";
-    if (matrix4 != matrix5)
-        std::cout << "матрицы не равны"
-                  << "\n\n";
-    else
-        std::cout << "матрицы равны"
-                  << "\n\n";
+    // matrix7 = matrix6;
+
+    // std::cout << "matrix7:\n"
+    //           << matrix7 << "\n\n";
+
+    // std::cout << "Проверка булевых операторов == и !=:\n";
+    // if (matrix4 != matrix5)
+    //     std::cout << "матрицы не равны"
+    //               << "\n\n";
+    // else
+    //     std::cout << "матрицы равны"
+    //               << "\n\n";
 
     // matrix5 += matrix5 + 1.2;
 
@@ -60,22 +81,22 @@ int main()
 
     // matrix5 *= matrix5 + 4;
 
-    matrix5.determinant();
-    // matrix5.identity();
-    // std::cout << matrix3.identity() << "\n\n";
-    std::cout << std::equality_comparable_with<int, float> << std::endl;
+    // matrix5.determinant();
+    // // matrix5.identity();
+    // // std::cout << matrix3.identity() << "\n\n";
+    // std::cout << std::equality_comparable_with<int, float> << std::endl;
 
-    Matrix<int> matrix{{1, 2, 6}, {3, 4, 5}};
+    // Matrix<int> matrix{{1, 2, 6}, {3, 4, 5}};
 
-    for (auto &x : matrix)
-        std::cout << x << ' ';
+    // for (auto &x : matrix)
+    //     std::cout << x << ' ';
 
-    std::cout << std::endl;
+    // std::cout << std::endl;
 
-    Matrix<float> matrix_1(matrix5);
+    // Matrix<float> matrix_1(matrix3);
 
-    for (auto &x : matrix_1)
-        std::cout << x << ' ';
+    // for (auto &x : matrix_1)
+    //     std::cout << x << ' ';
 
     // trym
     // {m
@@ -92,12 +113,12 @@ int main()
     // Matrix<int> my_matrix(row, col, 4);
     // std::cout << my_matrix << "\n\n";
 
-    const size_t a = 2;
-    const size_t b = 2;
-    // const size_t c = 3;
+    // const size_t a = 2;
+    // const size_t b = 2;
+    // // const size_t c = 3;
 
-    std::cout << "Проверка конструктора для списка инициализации:\n";
-    Matrix<int> my_matrix3(a, b);
+    // std::cout << "Проверка конструктора для списка инициализации:\n";
+    // Matrix<int> my_matrix3(a, b);
     // // std::cout << my_matrix3 << "\n\n";
     // Matrix<int> my_matrix4({{1, 2, 3},
     //                         {4, 5, 6}});
