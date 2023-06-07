@@ -4,72 +4,81 @@
 
 using string = std::string;
 
-// int inversion_matrix(matrix_t *const matrix)
-// {
-//     double temp;
-
-//     matrix_t iden;
-//     iden.rows = matrix->rows;
-//     iden.cols = matrix->cols;
-
-//     if (matrix_alloc(&iden) != 0)
-//         return ERR_ALLOC_MATRIX;
-
-// for (size_t i = 0; i < matrix->rows; i++)
-//     for (size_t j = 0; j < matrix->rows; j++)
-//         iden.matrix[i][j] = i == j;
-
-// for (size_t k = 0; k < matrix->rows; k++)
-// {
-//     temp = matrix->matrix[k][k];
-
-//     for (size_t j = 0; j < matrix->rows; j++)
-//     {
-//         matrix->matrix[k][j] /= temp;
-//         iden.matrix[k][j] /= temp;
-//     }
-
-//     for (size_t i = k + 1; i < matrix->rows; i++)
-//     {
-//         temp = matrix->matrix[i][k];
-
-//         for (size_t j = 0; j < matrix->rows; j++)
-//         {
-//             matrix->matrix[i][j] -= matrix->matrix[k][j] * temp;
-//             iden.matrix[i][j] -= iden.matrix[k][j] * temp;
-//         }
-//     }
-// }
-
-//     for (int k = matrix->rows - 1; k > 0; k--)
-//     {
-//         for (int i = k - 1; i >= 0; i--)
-//         {
-//             temp = matrix->matrix[i][k];
-
-//             for (size_t j = 0; j < matrix->rows; j++)
-//             {
-//                 matrix->matrix[i][j] -= matrix->matrix[k][j] * temp;
-//                 iden.matrix[i][j] -= iden.matrix[k][j] * temp;
-//             }
-//         }
-//     }
-
-//     for (size_t i = 0; i < matrix->rows; i++)
-//         for (size_t j = 0; j < matrix->rows; j++)
-//             matrix->matrix[i][j] = iden.matrix[i][j];
-
-//     matrix_free(iden.matrix, iden.rows);
-
-//     return EXIT_SUCCESS;
-// }
-
 int main()
 {
     std::cout << "Тестирование конструкторов создания матрицы:\n\n";
 
+    // Matrix<float> matrix1; нельзя
+    Matrix<int> matrix2(2, 2);
+    Matrix<int> matrix3(2, 3, 5);
+    int **m = new int *[2];
+    for (int i = 0; i < 2; ++i)
+    {
+        m[i] = new int[2];
+        for (int j = 0; j < 2; ++j)
+            m[i][j] = i + j;
+    }
+    Matrix<int> matrix4{2, 2, m};
+
+    for (int i = 0; i < 2; ++i)
+        delete[] m[i];
+    delete[] m;
+    Matrix<float> matrix5({{1, 2, 3},
+                           {4, 5, 6},
+                           {7, 8, 9}});
+
+    Matrix<float>::const_reverse_iterator rit = matrix5.rcbegin();
+
+    // Итерация по вектору в прямом порядке
+    for (; rit != matrix5.rcend(); ++rit)
+        std::cout << *rit << " ";
+
+    Matrix<string> matrix6(2, 2, "hello");
+    Matrix<string> matrix7(2, 2, "bye");
+
+    std::cout << "matrix7:\n"
+              << matrix7 << "\n\n";
+
+    matrix7 = matrix6;
+
+    std::cout << "matrix7:\n"
+              << matrix7 << "\n\n";
+
+    std::cout << "Проверка булевых операторов == и !=:\n";
+    if (matrix4 != matrix5)
+        std::cout << "матрицы не равны"
+                  << "\n\n";
+    else
+        std::cout << "матрицы равны"
+                  << "\n\n";
+
+    // matrix5 += matrix5 + 1.2;
+
+    // matrix5 -= matrix5 - 1.2;
+
+    // matrix5 -= matrix5 - 1.2;
+
+    // matrix5 *= matrix5 + 4;
+
+    matrix5.determinant();
+    // matrix5.identity();
+    // std::cout << matrix3.identity() << "\n\n";
+    std::cout << std::equality_comparable_with<int, float> << std::endl;
+
+    Matrix<int> matrix{{1, 2, 6}, {3, 4, 5}};
+
+    for (auto &x : matrix)
+        std::cout << x << ' ';
+
+    std::cout << std::endl;
+
+    Matrix<float> matrix_1(matrix5);
+
+    for (auto &x : matrix_1)
+        std::cout << x << ' ';
+
     // trym
-    // {
+    // {m
     //     std::cout << "Матрица с отрицательными количеством строк:\n";
     //     Matrix<int> err_m(-1, 2);
     // }
@@ -83,28 +92,17 @@ int main()
     // Matrix<int> my_matrix(row, col, 4);
     // std::cout << my_matrix << "\n\n";
 
-    // std::cout << "Проверка конструктора для си матрицы:\n";
-    // int **m = new int *[2];
-    // for (int i = 0; i < 2; ++i)
-    // {
-    //     m[i] = new int[2];
-    //     for (int j = 0; j < 2; ++j)
-    //         m[i][j] = i + j;
-    // }
-    // Matrix<int> my_matrix2{2, 2, m};
-    // std::cout << my_matrix2 << "\n\n";
+    const size_t a = 2;
+    const size_t b = 2;
+    // const size_t c = 3;
 
-    // for (int i = 0; i < 2; ++i)
-    //     delete[] m[i];
-    // delete[] m;
-
-    // std::cout << "Проверка конструктора для списка инициализации:\n";
-    // Matrix<int> my_matrix3({{1, 2, 3},
+    std::cout << "Проверка конструктора для списка инициализации:\n";
+    Matrix<int> my_matrix3(a, b);
+    // // std::cout << my_matrix3 << "\n\n";
+    // Matrix<int> my_matrix4({{1, 2, 3},
     //                         {4, 5, 6}});
-    // std::cout << my_matrix3 << "\n\n";
-
     // std::cout << "Проверка булевых операторов == и !=:\n";
-    // if (my_matrix != my_matrix3)
+    // if (my_matrix4 != my_matrix3)
     //     std::cout << "матрицы не равны"
     //               << "\n\n";
     // else

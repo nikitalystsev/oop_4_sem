@@ -4,14 +4,15 @@
 #include <iostream>
 #include <memory>
 
-#include "Matrix.hpp"
+#include "Concepts.hpp"
+#include "MatrixExceptions.hpp"
 
 using string = std::string;
 
-template <typename T> // объявление класса Matrix
+template <MatrixType T> // объявление класса Matrix
 class Matrix;
 
-template <typename T>
+template <MatrixType T>
 class ConstIterator
 {
 public:
@@ -21,34 +22,41 @@ public:
     using value_type = std::remove_const_t<T>;
     using pointer = T *;
     using reference = T &;
+    using iterator = ConstIterator<T>;
 
+    ConstIterator(Matrix<T> &matrix, const size_t index = 0);       // конструктор итератора
     ConstIterator(const Matrix<T> &matrix, const size_t index = 0); // конструктор итератора
-    ConstIterator(const ConstIterator<T> &it) = default;            // конструктор копирования
+    ConstIterator(const ConstIterator &it) = default;               // конструктор копирования
     ConstIterator(ConstIterator &&it) noexcept = default;           // конструктор перемещения
 
     ~ConstIterator() noexcept = default; // деструктор дефолтный
 
+    // оператор присваивания
+    iterator &operator=(const iterator &it);
+    iterator &operator=(iterator &&it) noexcept;
+
     // сравнение
-    bool operator!=(ConstIterator<T> const &other) const;
-    bool operator==(ConstIterator<T> const &other) const;
-    bool operator<(ConstIterator<T> const &other) const;
-    bool operator<=(ConstIterator<T> const &other) const;
-    bool operator>(ConstIterator<T> const &other) const;
-    bool operator>=(ConstIterator<T> const &other) const;
+    bool operator!=(iterator const &other) const;
+    bool operator==(iterator const &other) const;
+    bool operator<(iterator const &other) const;
+    bool operator<=(iterator const &other) const;
+    bool operator>(iterator const &other) const;
+    bool operator>=(iterator const &other) const;
 
     // перемещение
-    ConstIterator<T> &operator++() const;
-    ConstIterator<T> operator++(int) const;
-    ConstIterator<T> &next() const;
-    ConstIterator<T> &operator--() const;
-    ConstIterator<T> operator--(int) const;
-    ConstIterator<T> operator+(const int value) const;
-    ConstIterator<T> operator-(const int value) const;
-    ConstIterator<T> &operator+=(const int value) const;
-    ConstIterator<T> &operator-=(const int value) const;
+    iterator &operator++();
+    iterator operator++(int);
+    iterator &next() const;
+    iterator &operator--();
+    iterator operator--(int) const;
+    iterator operator+(const size_t value) const;
+    iterator operator-(const size_t value) const;
+    iterator &operator+=(const size_t value);
+    iterator &operator-=(const size_t value);
 
-    // доступ
+    // // доступ
     const T &operator*() const;
+    const T &value() const;
     const T *operator->() const;
     const T &operator[](const size_t index) const;
 
@@ -62,13 +70,23 @@ private:
     size_t _rows = 0;
     size_t _cols = 0;
 
-    void _check_index(const string hint = "");
-    void _check_data(const string hint = "") const;
+    void _check_index(const char *hint = "") const;
+    void _check_data(const char *hint = "") const;
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
+// конструктор итератора
+ConstIterator<T>::ConstIterator(Matrix<T> &matrix, const size_t index)
+{
+    _index = index;
+    _data_iter = matrix._data;
+    _rows = matrix._rows;
+    _cols = matrix._cols;
+}
+
+template <MatrixType T>
 // конструктор итератора
 ConstIterator<T>::ConstIterator(const Matrix<T> &matrix, const size_t index)
 {
@@ -78,202 +96,261 @@ ConstIterator<T>::ConstIterator(const Matrix<T> &matrix, const size_t index)
     _cols = matrix._cols;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
+// переопределили оператор присваивания =
+ConstIterator<T>::iterator &ConstIterator<T>::operator=(const ConstIterator<T>::iterator &it)
+{
+    this->_data_iter = it._data;
+    this->_index = it._index;
+    this->_rows = it._rows;
+    this->_cols = it._cols;
+
+    return *this;
+}
+
+template <MatrixType T>
+// переопределили оператор присваивания =
+ConstIterator<T>::iterator &ConstIterator<T>::operator=(ConstIterator<T>::iterator &&it) noexcept
+{
+    this->_data_iter = it._data;
+    this->_index = it._index;
+    this->_rows = it._rows;
+    this->_cols = it._cols;
+
+    return *this;
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <MatrixType T>
 // переопределили !=
-bool ConstIterator<T>::operator!=(ConstIterator<T> const &other) const
+bool ConstIterator<T>::operator!=(ConstIterator<T>::iterator const &other) const
 {
-    return _index != other._index;
+    return this->_index != other._index;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили ==
-bool ConstIterator<T>::operator==(ConstIterator<T> const &other) const
+bool ConstIterator<T>::operator==(ConstIterator<T>::iterator const &other) const
 {
-    return _index == other._index;
+    return this->_index == other._index;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили <
-bool ConstIterator<T>::operator<(ConstIterator<T> const &other) const
+bool ConstIterator<T>::operator<(ConstIterator<T>::iterator const &other) const
 {
-    return _index < other._index;
+    return this->_index < other._index;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили <=
-bool ConstIterator<T>::operator<=(ConstIterator<T> const &other) const
+bool ConstIterator<T>::operator<=(ConstIterator<T>::iterator const &other) const
 {
-    return _index <= other._index;
+    return this->_index <= other._index;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили >
-bool ConstIterator<T>::operator>(ConstIterator<T> const &other) const
+bool ConstIterator<T>::operator>(ConstIterator<T>::iterator const &other) const
 {
-    return _index > other._index;
+    return this->_index > other._index;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили >=
-bool ConstIterator<T>::operator>=(ConstIterator<T> const &other) const
+bool ConstIterator<T>::operator>=(ConstIterator<T>::iterator const &other) const
 {
-    return _index < other._index;
+    return this->_index >= other._index;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
 // переопределили префиксный инкремент
-ConstIterator<T> &ConstIterator<T>::operator++() const
+ConstIterator<T>::iterator &ConstIterator<T>::operator++()
 {
-    if (_index < _cols * _rows)
+    if (this->_index < this->_cols * this->_rows)
         ++_index;
 
     return *this;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили постфиксный инкремент
-ConstIterator<T> ConstIterator<T>::operator++(int) const
+ConstIterator<T>::iterator ConstIterator<T>::operator++(int)
 {
-    ConstIterator<T> it(*this);
+    iterator it(*this);
 
     ++(*this);
 
     return it;
 }
 
-template <typename T>
+template <MatrixType T>
 // next
-ConstIterator<T> &ConstIterator<T>::next() const
+ConstIterator<T>::iterator &ConstIterator<T>::next() const
 {
     return operator++();
 }
 
-template <typename T>
-ConstIterator<T> &ConstIterator<T>::operator--() const
+template <MatrixType T>
+ConstIterator<T>::iterator &ConstIterator<T>::operator--()
 {
-    if (_index < _cols * _rows)
-    {
+    if (_index > 0)
         --_index;
-    }
 
     return *this;
 }
 
-template <typename T>
-ConstIterator<T> ConstIterator<T>::operator--(int) const
+template <MatrixType T>
+ConstIterator<T>::iterator ConstIterator<T>::operator--(int) const
 {
-    ConstIterator<T> iter(*this);
+    iterator it(*this);
 
     --(*this);
 
-    return iter;
+    return it;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор +
-ConstIterator<T> ConstIterator<T>::operator+(const int value) const
+ConstIterator<T>::iterator ConstIterator<T>::operator+(const size_t value) const
 {
-    ConstIterator<T> it(*this);
+    iterator it(*this);
 
-    if (value < 0 && it._index < static_cast<size_t>(-value))
+    if (value < 0 && it._index < -value)
         it._index = 0;
     else
         it._index += value;
 
     if (it._index < 0)
         it._index = 0;
-    else if (it._index > _rows * _cols)
-        it._index = _rows * _cols;
+    else if (it._index > this->_rows * this->_cols)
+        it._index = this->_rows * this->_cols;
 
     return it;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор -
-ConstIterator<T> ConstIterator<T>::operator-(const int value) const
+ConstIterator<T>::iterator ConstIterator<T>::operator-(const size_t value) const
 {
     return operator+(-value);
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор +=
-ConstIterator<T> &ConstIterator<T>::operator+=(const int value) const
+ConstIterator<T>::iterator &ConstIterator<T>::operator+=(const size_t value)
 {
-    _index += value;
+    if (value < 0 && this->_index < -value)
+        this->_index = 0;
+    else
+        this->_index += value;
+
+    if (this->_index < 0)
+        this->_index = 0;
+    else if (this->_index > this->_rows * this->_cols)
+        this->_index = this->_rows * this->_cols;
 
     return *this;
 }
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор -=
-ConstIterator<T> &ConstIterator<T>::operator-=(const int value) const
+ConstIterator<T>::iterator &ConstIterator<T>::operator-=(const size_t value)
 {
-    _index -= value;
-
-    return *this;
+    return operator+=(-value);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
 // переопределили оператор разыменования *
 const T &ConstIterator<T>::operator*() const
 {
-    std::shared_ptr<typename Matrix<T>::MatrixRow[]> data_ptr = _data_iter.lock();
+    this->_check_data("Const Итератор указывает на nullptr\n");
+    // this->_check_index("Const Итератор не находится в границах данных при выполнении const оператора *");
 
-    return data_ptr[_index / _cols][_index % _cols];
+    std::shared_ptr<typename Matrix<T>::MatrixRow[]> data_ptr = this->_data_iter.lock();
+
+    return data_ptr[this->_index / this->_cols][this->_index % this->_cols];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+template <MatrixType T>
+const T &ConstIterator<T>::value() const
+{
+    return operator*();
+}
 
-template <typename T>
+// ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <MatrixType T>
 // переопределили ->
 const T *ConstIterator<T>::operator->() const
 {
-    std::shared_ptr<typename Matrix<T>::MatrixRow[]> data_ptr = _data_iter.lock();
+    this->_check_data("Const Итератор указывает на nullptr\n");
+    this->_check_index("Const Итератор не находится в границах данных при выполнении const оператора ->");
+
+    std::shared_ptr<typename Matrix<T>::MatrixRow[]> data_ptr = this->_data_iter.lock();
 
     return data_ptr[_index / _cols].get_address() + (_index % _cols);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+template <MatrixType T>
+// переопределили []
+const T &ConstIterator<T>::operator[](const size_t index) const
+{
+    this->_check_data("Const Итератор указывает на nullptr\n");
 
-template <typename T>
+    size_t tmp_index = this->_index;
+    this->_index = index;
+
+    this->_check_index("Const Итератор не находится в границах данных при выполнении const оператора []");
+
+    this->_index = tmp_index;
+
+    std::shared_ptr<typename Matrix<T>::MatrixRow[]> data_ptr = this->_data_iter.lock();
+
+    return data_ptr[index / this->_cols][index % this->_cols];
+}
+
+// ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <MatrixType T>
 ConstIterator<T>::operator bool() const
 {
-    return _data_iter.expired();
+    return this->_data_iter.expired();
 }
 
-template <typename T>
+template <MatrixType T>
 bool ConstIterator<T>::is_end() const
 {
-    return _index == _rows * _cols;
+    return this->_index == this->_rows * this->_cols;
 }
 
-template <typename T>
+template <MatrixType T>
 bool ConstIterator<T>::is_valid_data() const
 {
-    return !_data_iter.expired();
+    return !this->_data_iter.expired();
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename T>
+template <MatrixType T>
 // метод для проверки индекса в итераторе
-void ConstIterator<T>::_check_index(const string hint)
+void ConstIterator<T>::_check_index(const char *hint) const
 {
-    if (_index < _rows * _cols)
+    if (this->_index < this->_rows * this->_cols)
         return;
 
     throw IteratorIndexError(__FILE__, typeid(*this).name(), __LINE__, hint);
 }
 
-template <typename T>
+template <MatrixType T>
 // метод проверяет данные на валидность
-void ConstIterator<T>::_check_data(const string hint) const
+void ConstIterator<T>::_check_data(const char *hint) const
 {
     if (is_valid_data())
         return;
