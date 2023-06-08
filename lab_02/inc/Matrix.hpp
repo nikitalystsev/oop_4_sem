@@ -146,6 +146,56 @@ public:
         requires MatrixMul<T, T2>
     Matrix<T> &mul_eq_elem(const T2 &elem) noexcept;
 
+    template <MatrixType T2>
+    decltype(auto) operator/(const Matrix<T2> &matrix) const;
+    template <MatrixType T2>
+    decltype(auto) operator/(const T2 &elem) const noexcept;
+    template <MatrixType T2>
+        requires MatrixDiv<T, T2>
+    Matrix<T> &operator/=(const Matrix<T2> &matrix);
+    template <MatrixType T2>
+        requires MatrixDiv<T, T2>
+    Matrix<T> &operator/=(const T2 &elem) noexcept;
+
+    template <MatrixType T2>
+    decltype(auto) div_matrix(const Matrix<T2> &matrix) const;
+    template <MatrixType T2>
+    decltype(auto) div_elem(const T2 &elem) const noexcept;
+    template <MatrixType T2>
+        requires MatrixDiv<T, T2>
+    Matrix<T> &div_eq_matrix(const Matrix<T2> &matrix);
+    template <MatrixType T2>
+        requires MatrixDiv<T, T2>
+    Matrix<T> &div_eq_elem(const T2 &elem) noexcept;
+
+    template <MatrixType T2>
+    friend decltype(auto) operator+(const T2 &elem, const Matrix<T> &matrix)
+    {
+        return matrix + elem;
+    }
+
+    template <MatrixType T2>
+    friend decltype(auto) operator-(const T2 &elem, const Matrix<T> &matrix)
+    {
+        return matrix - elem;
+    }
+
+    template <MatrixType T2>
+    friend decltype(auto) operator*(const T2 &elem, const Matrix<T> &matrix)
+    {
+        return matrix * elem;
+    }
+
+    template <MatrixType T2>
+    friend decltype(auto) operator/(const T2 &elem, const Matrix<T> &matrix)
+    {
+        Matrix tmp(matrix);
+
+        tmp.inverse();
+
+        return tmp * elem;
+    }
+
     Matrix<T> operator-();
     Matrix<T> neg();
 
@@ -754,6 +804,90 @@ Matrix<T> &Matrix<T>::mul_eq_elem(const T2 &elem) noexcept
     return operator*=(elem);
 }
 
+template <MatrixType T>
+template <MatrixType T2>
+decltype(auto) Matrix<T>::operator/(const Matrix<T2> &matrix) const
+{
+    Matrix<decltype((*this)[0][0] / matrix[0][0])> tmp(matrix);
+
+    tmp.inverse();
+
+    return operator*(tmp);
+}
+
+template <MatrixType T>
+template <MatrixType T2>
+decltype(auto) Matrix<T>::operator/(const T2 &elem) const noexcept
+{
+    if (elem == 0)
+        throw InvalidArgument(__FILE__, typeid(*this).name(), __LINE__, "Нулевой делитель");
+
+    Matrix<decltype((*this)[0][0] / elem)> tmp(_rows, _cols);
+
+    for (size_t i = 0; i < _rows; ++i)
+        for (size_t j = 0; j < _cols; ++j)
+            tmp[i][j] = _data[i][j] / elem;
+
+    return operator*(tmp);
+}
+
+template <MatrixType T>
+template <MatrixType T2>
+    requires MatrixDiv<T, T2>
+Matrix<T> &Matrix<T>::operator/=(const Matrix<T2> &matrix)
+{
+    Matrix<T> tmp = operator/(matrix);
+
+    *this = tmp;
+
+    return *this;
+}
+
+template <MatrixType T>
+template <MatrixType T2>
+    requires MatrixDiv<T, T2>
+Matrix<T> &Matrix<T>::operator/=(const T2 &elem) noexcept
+{
+    if (elem == 0)
+        throw InvalidArgument(__FILE__, typeid(*this).name(), __LINE__, "Нулевой делитель");
+
+    for (size_t i = 0; i < _rows; ++i)
+        for (size_t j = 0; j < _cols; ++j)
+            _data[i][j] /= elem;
+
+    return *this;
+}
+
+template <MatrixType T>
+template <MatrixType T2>
+decltype(auto) Matrix<T>::div_matrix(const Matrix<T2> &matrix) const
+{
+    return operator/(matrix);
+}
+
+template <MatrixType T>
+template <MatrixType T2>
+decltype(auto) Matrix<T>::div_elem(const T2 &elem) const noexcept
+{
+    return operator/(elem);
+}
+
+template <MatrixType T>
+template <MatrixType T2>
+    requires MatrixDiv<T, T2>
+Matrix<T> &Matrix<T>::div_eq_matrix(const Matrix<T2> &matrix)
+{
+    return operator/=(matrix);
+}
+
+template <MatrixType T>
+template <MatrixType T2>
+    requires MatrixDiv<T, T2>
+Matrix<T> &Matrix<T>::div_eq_elem(const T2 &elem) noexcept
+{
+    return operator/=(elem);
+}
+
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <MatrixType T>
@@ -855,6 +989,9 @@ template <MatrixType T>
 Matrix<T> Matrix<T>::transpose()
     requires MatrixFloatPoint<T>
 {
+    if (!is_square())
+        throw InvalidState(__FILE__, typeid(*this).name(), __LINE__, "Матрица должна быть квадратной для получения транспонированной матрицы;");
+
     Matrix<T> tmp(_cols, _rows);
 
     for (size_t i = 0; i < _rows; ++i)
@@ -883,6 +1020,9 @@ template <MatrixType T>
 Matrix<T> Matrix<T>::inverse()
     requires MatrixFloatPoint<T>
 {
+    if (!is_square())
+        throw InvalidState(__FILE__, typeid(*this).name(), __LINE__, "Матрица должна быть квадратной для получения обратной матрицы;");
+
     T temp;
 
     Matrix<T> iden = identity();

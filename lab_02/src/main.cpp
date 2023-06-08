@@ -4,11 +4,11 @@
 // #include "Concepts.hpp"
 #include "Matrix.hpp"
 
-template <typename T, typename T2>
-concept PemittedType = requires {
-    std::convertible_to<int, string>;
+template <typename T>
+concept MatrixFloatPoints = requires {
+    std::floating_point<T>;
 };
-// concept PemittedType = std::convertible_to<int, string>;
+
 using string = std::string;
 
 int main()
@@ -36,16 +36,14 @@ int main()
                            {4, 5, 6},
                            {7, 8, 9}}); // список инициализации
 
-    std::cout << std::convertible_to<int, string> << "\n\n";
-    std::cout << std::convertible_to<string, int> << "\n\n";
-    std::cout << PemittedType<int, string> << "\n\n";
-    std::cout << PemittedType<string, int> << "\n\n";
+    std::cout << std::floating_point<float> << "\n\n";
+    std::cout << MatrixFloatPoints<float> << "\n\n";
 
     Matrix<int> matrix6(matrix3); // копирование
     Matrix<string> matrix7(2, 3, "hi");
     Matrix<string> matrix8(matrix3);
-    // for (auto &x : matrix8)
-    //     std::cout << x << ' ';
+    for (auto &x : matrix8)
+        std::cout << x << ' ';
 
     // std::cout << matrix3 << "\n\n";
     // Matrix<float>::const_reverse_iterator rit = matrix5.rcbegin();
@@ -73,13 +71,13 @@ int main()
     //     std::cout << "матрицы равны"
     //               << "\n\n";
 
-    // matrix5 += matrix5 + 1.2;
+    matrix5 += matrix5 + 1.2;
 
-    // matrix5 -= matrix5 - 1.2;
+    matrix5 -= matrix5 - 1.2;
 
-    // matrix5 -= matrix5 - 1.2;
+    matrix5 -= matrix5 - 1.2;
 
-    // matrix5 *= matrix5 + 4;
+    matrix5 *= 4 + matrix5;
 
     // matrix5.determinant();
     // // matrix5.identity();

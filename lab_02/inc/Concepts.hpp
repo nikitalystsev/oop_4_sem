@@ -8,7 +8,7 @@ concept MatrixType = requires { std::semiregular<T>; };
 
 template <typename T, typename T2>
 concept PermittedType = requires {
-    // std::constructible_from<T2, T>;
+    std::constructible_from<T2, T>;
     std::convertible_to<T2, T>;
 };
 
@@ -46,6 +46,15 @@ concept MatrixMul = requires(T a, U b) {
 template <typename T>
 concept MatrixFloatPoint = requires {
     std::floating_point<T>;
+};
+
+template <typename T, typename T2>
+concept MatrixDiv = requires(T a, T2 b) {
+    MatrixFloatPoint<T>;
+    MatrixFloatPoint<T2>;
+    {
+        a / b
+    } -> std::convertible_to<T>;
 };
 
 #endif // __CONCEPTS_H__
