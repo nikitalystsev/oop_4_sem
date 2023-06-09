@@ -8,10 +8,7 @@ using string = std::string;
 using namespace std;
 
 template <typename T, typename T2>
-concept PemittedType = requires {
-    // std::constructible_from<T2, T>;
-    std::convertible_to<T2, T>;
-};
+concept PemittedType = std::convertible_to<T2, T>;
 
 int main()
 {
@@ -57,8 +54,10 @@ int main()
     Matrix<string> matrix6(2, 2, "hello");
     Matrix<string> matrix7(2, 2, "bye");
 
+    Matrix<string> matrix_new(matrix7);
+
     // std::cout << "\n-matrix7:\n"
-    //           << -matrix7 << "\n\n";
+    //           << -matrix7 << "\n\n";m
 
     std::cout << "\n-matrix5:\n"
               << -matrix5 << "\n\n";
