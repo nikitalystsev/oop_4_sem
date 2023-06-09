@@ -43,7 +43,7 @@ template <typename T, typename T2>
 concept MatrixMul = requires(T a, T2 b) {
     PermittedType<T, T2>;
     {
-        a *b
+        a * b
     } -> std::convertible_to<T>;
 };
 
