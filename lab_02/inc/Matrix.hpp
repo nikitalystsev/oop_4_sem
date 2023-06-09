@@ -88,7 +88,8 @@ public:
         requires MatrixSum<T, T2>
     Matrix<T> operator+(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) operator+(const T2 &elem) const;
+        requires MatrixSum<T, T2>
+    Matrix<T> operator+(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixSum<T, T2>
     Matrix<T> &operator+=(const Matrix<T2> &matrix);
@@ -97,9 +98,11 @@ public:
     Matrix<T> &operator+=(const T2 &elem);
 
     template <MatrixType T2>
-    decltype(auto) add_matrix(const Matrix<T2> &matrix) const;
+        requires MatrixSum<T, T2>
+    Matrix<T> add_matrix(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) add_elem(const T2 &elem) const;
+        requires MatrixSum<T, T2>
+    Matrix<T> add_elem(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixSum<T, T2>
     Matrix<T> &add_eq_matrix(const Matrix<T2> &matrix);
@@ -108,9 +111,11 @@ public:
     Matrix<T> &add_eq_elem(const T2 &elem);
 
     template <MatrixType T2>
-    decltype(auto) operator-(const Matrix<T2> &matrix) const;
+        requires MatrixSub<T, T2>
+    Matrix<T> operator-(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) operator-(const T2 &elem) const;
+        requires MatrixSub<T, T2>
+    Matrix<T> operator-(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixSub<T, T2>
     Matrix<T> &operator-=(const Matrix<T2> &matrix);
@@ -119,9 +124,11 @@ public:
     Matrix<T> &operator-=(const T2 &elem);
 
     template <MatrixType T2>
-    decltype(auto) sub_matrix(const Matrix<T2> &matrix) const;
+        requires MatrixSub<T, T2>
+    Matrix<T> sub_matrix(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) sub_elem(const T2 &elem) const;
+        requires MatrixSub<T, T2>
+    Matrix<T> sub_elem(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixSub<T, T2>
     Matrix<T> &sub_eq_matrix(const Matrix<T2> &matrix);
@@ -130,9 +137,11 @@ public:
     Matrix<T> &sub_eq_elem(const T2 &elem);
 
     template <MatrixType T2>
-    decltype(auto) operator*(const Matrix<T2> &matrix) const;
+        requires MatrixMul<T, T2>
+    Matrix<T> operator*(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) operator*(const T2 &elem) const;
+        requires MatrixMul<T, T2>
+    Matrix<T> operator*(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixMul<T, T2>
     Matrix<T> &operator*=(const Matrix<T2> &matrix);
@@ -141,9 +150,11 @@ public:
     Matrix<T> &operator*=(const T2 &elem);
 
     template <MatrixType T2>
-    decltype(auto) mul_matrix(const Matrix<T2> &matrix) const;
+        requires MatrixMul<T, T2>
+    Matrix<T> mul_matrix(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) mul_elem(const T2 &elem) const;
+        requires MatrixMul<T, T2>
+    Matrix<T> mul_elem(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixMul<T, T2>
     Matrix<T> &mul_eq_matrix(const Matrix<T2> &matrix);
@@ -152,9 +163,11 @@ public:
     Matrix<T> &mul_eq_elem(const T2 &elem);
 
     template <MatrixType T2>
-    decltype(auto) operator/(const Matrix<T2> &matrix) const;
+        requires MatrixDiv<T, T2>
+    Matrix<T> operator/(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) operator/(const T2 &elem) const;
+        requires MatrixDiv<T, T2>
+    Matrix<T> operator/(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixDiv<T, T2>
     Matrix<T> &operator/=(const Matrix<T2> &matrix);
@@ -163,9 +176,11 @@ public:
     Matrix<T> &operator/=(const T2 &elem);
 
     template <MatrixType T2>
-    decltype(auto) div_matrix(const Matrix<T2> &matrix) const;
+        requires MatrixDiv<T, T2>
+    Matrix<T> div_matrix(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) div_elem(const T2 &elem) const;
+        requires MatrixDiv<T, T2>
+    Matrix<T> div_elem(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixDiv<T, T2>
     Matrix<T> &div_eq_matrix(const Matrix<T2> &matrix);
@@ -590,9 +605,10 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator+(const T2 &elem) const
+    requires MatrixSum<T, T2>
+Matrix<T> Matrix<T>::operator+(const T2 &elem) const
 {
-    Matrix<decltype((*this)[0][0] + elem)> tmp(_rows, _cols);
+    Matrix<T> tmp(_rows, _cols);
 
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
@@ -629,14 +645,16 @@ Matrix<T> &Matrix<T>::operator+=(const T2 &elem)
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::add_matrix(const Matrix<T2> &matrix) const
+    requires MatrixSum<T, T2>
+Matrix<T> Matrix<T>::add_matrix(const Matrix<T2> &matrix) const
 {
     return operator+(matrix);
 }
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::add_elem(const T2 &elem) const
+    requires MatrixSum<T, T2>
+Matrix<T> Matrix<T>::add_elem(const T2 &elem) const
 {
     return operator+(elem);
 }
@@ -661,11 +679,12 @@ Matrix<T> &Matrix<T>::add_eq_elem(const T2 &elem)
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator-(const Matrix<T2> &matrix) const
+    requires MatrixSub<T, T2>
+Matrix<T> Matrix<T>::operator-(const Matrix<T2> &matrix) const
 {
     _check_sizes(matrix);
 
-    Matrix<decltype((*this)[0][0] - matrix[0][0])> tmp(_rows, _cols);
+    Matrix<T> tmp(_rows, _cols);
 
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
@@ -676,9 +695,10 @@ decltype(auto) Matrix<T>::operator-(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator-(const T2 &elem) const
+    requires MatrixSub<T, T2>
+Matrix<T> Matrix<T>::operator-(const T2 &elem) const
 {
-    Matrix<decltype((*this)[0][0] - elem)> tmp(_rows, _cols);
+    Matrix<T> tmp(_rows, _cols);
 
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
@@ -715,14 +735,16 @@ Matrix<T> &Matrix<T>::operator-=(const T2 &elem)
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::sub_matrix(const Matrix<T2> &matrix) const
+    requires MatrixSub<T, T2>
+Matrix<T> Matrix<T>::sub_matrix(const Matrix<T2> &matrix) const
 {
     return operator-(matrix);
 }
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::sub_elem(const T2 &elem) const
+    requires MatrixSub<T, T2>
+Matrix<T> Matrix<T>::sub_elem(const T2 &elem) const
 {
     return operator-(elem);
 }
@@ -747,7 +769,8 @@ Matrix<T> &Matrix<T>::sub_eq_elem(const T2 &elem)
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator*(const Matrix<T2> &matrix) const
+    requires MatrixMul<T, T2>
+Matrix<T> Matrix<T>::operator*(const Matrix<T2> &matrix) const
 {
     _check_mult_sizes(matrix);
 
@@ -763,7 +786,8 @@ decltype(auto) Matrix<T>::operator*(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator*(const T2 &elem) const
+    requires MatrixMul<T, T2>
+Matrix<T> Matrix<T>::operator*(const T2 &elem) const
 {
     Matrix<decltype((*this)[0][0] * elem)> tmp(_rows, _cols);
 
@@ -807,14 +831,16 @@ Matrix<T> &Matrix<T>::operator*=(const T2 &elem)
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::mul_matrix(const Matrix<T2> &matrix) const
+    requires MatrixMul<T, T2>
+Matrix<T> Matrix<T>::mul_matrix(const Matrix<T2> &matrix) const
 {
     return operator*(matrix);
 }
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::mul_elem(const T2 &elem) const
+    requires MatrixMul<T, T2>
+Matrix<T> Matrix<T>::mul_elem(const T2 &elem) const
 {
     return operator*(elem);
 }
@@ -837,9 +863,10 @@ Matrix<T> &Matrix<T>::mul_eq_elem(const T2 &elem)
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator/(const Matrix<T2> &matrix) const
+    requires MatrixDiv<T, T2>
+Matrix<T> Matrix<T>::operator/(const Matrix<T2> &matrix) const
 {
-    Matrix<decltype((*this)[0][0] / matrix[0][0])> tmp(matrix);
+    Matrix<T> tmp(matrix);
 
     tmp.inverse();
 
@@ -848,12 +875,13 @@ decltype(auto) Matrix<T>::operator/(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator/(const T2 &elem) const
+    requires MatrixDiv<T, T2>
+Matrix<T> Matrix<T>::operator/(const T2 &elem) const
 {
     if (elem == 0)
         throw InvalidArgument(__FILE__, typeid(*this).name(), __LINE__, "Нулевой делитель");
 
-    Matrix<decltype((*this)[0][0] / elem)> tmp(_rows, _cols);
+    Matrix<T> tmp(_rows, _cols);
 
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
@@ -891,14 +919,16 @@ Matrix<T> &Matrix<T>::operator/=(const T2 &elem)
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::div_matrix(const Matrix<T2> &matrix) const
+    requires MatrixDiv<T, T2>
+Matrix<T> Matrix<T>::div_matrix(const Matrix<T2> &matrix) const
 {
     return operator/(matrix);
 }
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::div_elem(const T2 &elem) const
+    requires MatrixDiv<T, T2>
+Matrix<T> Matrix<T>::div_elem(const T2 &elem) const
 {
     return operator/(elem);
 }
