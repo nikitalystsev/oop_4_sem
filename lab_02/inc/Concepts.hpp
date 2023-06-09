@@ -1,7 +1,8 @@
 #ifndef __CONCEPTS_H__
 #define __CONCEPTS_H__
 
-#include <concepts> 
+#include <iterator>
+#include <concepts>
 
 template <typename T>
 concept MatrixType = requires { std::semiregular<T>; };
@@ -60,8 +61,21 @@ concept MatrixDiv = requires(T a, T2 b) {
     } -> std::convertible_to<T>;
 };
 
-template <typename T, typename U>
-concept PermittedContainer = requires(U &u) {
+template <typename T>
+concept FriendlyContainer = requires(T &u) {
+    {
+        u.begin()
+    } -> std::input_iterator;
+    {
+        u.end()
+    } -> std::sentinel_for<decltype(u.begin())>;
+
+    std::constructible_from<T, typename std::iterator_traits<decltype(u.begin())>::reference>;
+};
+
+template <typename T, typename T2>
+concept PermittedContainer = requires(T2 &u) {
+    FriendlyContainer<T2>;
     {
         u.get_rows()
     } noexcept -> std::same_as<typename T::size_type>;
