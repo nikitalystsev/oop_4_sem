@@ -42,8 +42,9 @@ concept MatrixSub = requires(T a, T2 b) {
 template <typename T, typename T2>
 concept MatrixMul = requires(T a, T2 b) {
     PermittedType<T, T2>;
+    MatrixSum<T, T2>;
     {
-        a * b
+        a *b
     } -> std::convertible_to<T>;
 };
 
@@ -56,6 +57,8 @@ template <typename T, typename T2>
 concept MatrixDiv = requires(T a, T2 b) {
     MatrixFloatPoint<T>;
     MatrixFloatPoint<T2>;
+    MatrixSum<T, T2>;
+    MatrixMul<T, T2>;
     {
         a / b
     } -> std::convertible_to<T>;
