@@ -25,6 +25,7 @@ public:
     using value_type = T;
     using size_type = size_t;
     using iterator = Iterator<T>;
+    using difference_type = std::ptrdiff_t;
     using const_iterator = ConstIterator<T>;
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
