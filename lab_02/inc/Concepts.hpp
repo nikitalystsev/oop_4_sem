@@ -1,7 +1,7 @@
 #ifndef __CONCEPTS_H__
 #define __CONCEPTS_H__
 
-#include <concepts> // встроенные концепты
+#include <concepts> 
 
 template <typename T>
 concept MatrixType = requires { std::semiregular<T>; };
