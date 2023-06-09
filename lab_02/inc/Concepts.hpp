@@ -12,6 +12,16 @@ concept PermittedType = requires {
     std::convertible_to<T2, T>;
 };
 
+template <typename T>
+concept Numeric = std::is_arithmetic_v<T>;
+
+template <typename T>
+concept NumericMatrix = requires(T m) {
+    {
+        -m
+    } -> Numeric;
+};
+
 template <typename T, typename T2>
 concept MatrixEquality = requires {
     std::equality_comparable<T>;

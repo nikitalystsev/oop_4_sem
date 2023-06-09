@@ -48,7 +48,13 @@ int main()
     Matrix<string> matrix6(2, 2, "hello");
     Matrix<string> matrix7(2, 2, "bye");
 
-    std::cout << "\nmmatrix7:\n"
+    // std::cout << "\n-matrix7:\n"
+    //           << -matrix7 << "\n\n";
+
+    std::cout << "\n-matrix5:\n"
+              << -matrix5 << "\n\n";
+
+    std::cout << "\nmatrix7:\n"
               << matrix7 << "\n\n";
 
     matrix7 = matrix6;

@@ -201,8 +201,10 @@ public:
         return tmp * elem;
     }
 
-    Matrix<T> operator-();
-    Matrix<T> neg();
+    Matrix<T> operator-()
+        requires NumericMatrix<T>;
+    Matrix<T> neg()
+        requires NumericMatrix<T>;
 
     // более сложные математические операции
     value_type determinant() const
@@ -904,6 +906,7 @@ Matrix<T> &Matrix<T>::div_eq_elem(const T2 &elem)
 
 template <MatrixType T>
 Matrix<T> Matrix<T>::operator-()
+    requires NumericMatrix<T>
 {
     Matrix<T> tmp(_rows, _cols);
 
@@ -916,6 +919,7 @@ Matrix<T> Matrix<T>::operator-()
 
 template <MatrixType T>
 Matrix<T> Matrix<T>::neg()
+    requires NumericMatrix<T>
 {
     return operator-();
 }
