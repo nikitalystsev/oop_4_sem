@@ -19,7 +19,6 @@ class Iterator
 public:
     // определили алиасы типов
     using iterator_type = std::random_access_iterator_tag; // итератор произвольного доступа
-    using difference_type = std::ptrdiff_t;
     using value_type = std::remove_const_t<T>;
     using pointer = T *;
     using reference = T &;

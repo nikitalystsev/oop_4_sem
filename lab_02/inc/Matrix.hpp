@@ -28,7 +28,6 @@ public:
     using const_iterator = ConstIterator<T>;
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-    using difference_type = typename iterator::difference_type;
     using reference = typename iterator::reference;
     using const_reference = typename const_iterator::reference;
     using pointer = typename iterator::pointer;
