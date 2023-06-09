@@ -29,14 +29,8 @@ public:
     ConstIterator(const Matrix<T> &matrix, const size_t index = 0); // конструктор итератора
     ConstIterator(const ConstIterator &it) = default;               // конструктор копирования
     ConstIterator(ConstIterator &&it) noexcept = default;           // конструктор перемещения
-    ConstIterator(const Iterator<T> &other) noexcept
-        : ConstIterator(other._data_iter, other._index)
-    {
-    }
-    ConstIterator(Iterator<T> &&other) noexcept
-        : ConstIterator(other._data_iter, other._index)
-    {
-    }
+    ConstIterator(const Iterator<T> &other) noexcept;
+    ConstIterator(Iterator<T> &&other) noexcept;
 
     ~ConstIterator() noexcept = default; // деструктор дефолтный
 
@@ -105,6 +99,24 @@ ConstIterator<T>::ConstIterator(const Matrix<T> &matrix, const size_t index)
     _data_iter = matrix._data;
     _rows = matrix._rows;
     _cols = matrix._cols;
+}
+
+template <MatrixType T>
+ConstIterator<T>::ConstIterator(const Iterator<T> &other) noexcept
+{
+    _index = other._index;
+    _data_iter = other._data_iter;
+    _rows = other._rows;
+    _cols = other._cols;
+}
+
+template <MatrixType T>
+ConstIterator<T>::ConstIterator(Iterator<T> &&other) noexcept
+{
+    _index = other._index;
+    _data_iter = other._data_iter;
+    _rows = other._rows;
+    _cols = other._cols;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
