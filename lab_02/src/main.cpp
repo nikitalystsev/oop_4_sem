@@ -18,8 +18,8 @@ int main()
     std::cout << "Тестирование конструкторов создания матрицы:\n\n";
 
     std::cout << std::convertible_to<int, string> << endl;
-    std::cout << PemittedType<int, string> << endl;
-    
+    std::cout << PemittedType<string, int> << endl;
+
     // Matrix<float> matrix1; нельзя
     Matrix<int> matrix2(2, 2);
     Matrix<int> matrix3(2, 3, 5); // филлером
