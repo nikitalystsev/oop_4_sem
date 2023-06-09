@@ -54,6 +54,8 @@ public:
     iterator &operator+=(const size_t value);
     iterator &operator-=(const size_t value);
 
+    difference_type operator-(const iterator &it);
+
     // // доступ
     const T &operator*() const;
     const T &value() const;
@@ -262,6 +264,12 @@ template <MatrixType T>
 ConstIterator<T>::iterator &ConstIterator<T>::operator-=(const size_t value)
 {
     return operator+=(-value);
+}
+
+template <MatrixType T>
+ConstIterator<T>::difference_type ConstIterator<T>::operator-(const iterator &it)
+{
+    return std::max(this->_index, it._index) - std::min(this->_index, it._index);
 }
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
