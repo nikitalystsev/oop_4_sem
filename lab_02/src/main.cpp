@@ -10,6 +10,11 @@ using namespace std;
 template <typename T, typename T2>
 concept PemittedType = std::convertible_to<T2, T>;
 
+template <typename T, typename T2>
+concept PemittedType = requires {
+    std::convertible_to<T2, T>;
+};
+
 int main()
 {
     std::cout << "Тестирование конструкторов создания матрицы:\n\n";
