@@ -234,7 +234,8 @@ public:
         requires MatrixFloatPoint<T>;
     bool is_square() const; // квадратная ли матрица
     size_t size() const;
-    // void fill(Iterator<T> start, const Iterator<T> &end, const T &value); // заполнение матрицы значениями
+
+    void fill(Iterator<T> start, const Iterator<T> &end, const T &value); // заполнение матрицы значениями
 
     T &get_elem(size_t row, size_t col);
     const T &get_elem(size_t row, size_t col) const;
@@ -1129,13 +1130,13 @@ size_t Matrix<T>::size() const
     return _rows * _cols;
 }
 
-// template <MatrixType T>
-// // заполнить часть матрицы значениями
-// void Matrix<T>::fill(Iterator<T> start, const Iterator<T> &end, const T &value)
-// {
-//     for (Iterator<T> it = start; it < end; ++it)
-//         *it = value;
-// }
+template <MatrixType T>
+// заполнить часть матрицы значениями
+void Matrix<T>::fill(Iterator<T> start, const Iterator<T> &end, const T &value)
+{
+    for (Iterator<T> it = start; it < end; ++it)
+        *it = value;
+}
 
 template <MatrixType T>
 // получить элемент матрицы
