@@ -52,6 +52,10 @@ public:
         requires PermittedContainer<T, Container>
     explicit Matrix(const Container &matrix);
 
+    template <std::input_iterator Iter, std::sentinel_for<Iter> Iter_e>
+        requires std::constructible_from<T, typename std::iterator_traits<Iter>::reference>
+    Matrix(const Iter begin, const Iter_e end, const size_t cols);
+
     ~Matrix() noexcept = default; // деструктор класса по умолчанию
 
     MatrixRow operator[](const size_t row);             // методы, возвращающие строку матрицы
@@ -381,6 +385,34 @@ Matrix<T>::Matrix(const Container &container) : MatrixBase(container.get_rows(),
             this->_data[i][j] = container[i][j];
 }
 
+template <MatrixType T>
+template <std::input_iterator Iter, std::sentinel_for<Iter> Iter_e>
+    requires std::constructible_from<T, typename std::iterator_traits<Iter>::reference>
+Matrix<T>::Matrix(const Iter begin, const Iter_e end, const size_t cols)
+{
+    size_t size_rows = 0;
+
+    for (auto iter = begin; iter != end; iter++, size_rows++)
+        ;
+
+    if (size_rows == 0 || size_rows % cols != 0)
+        throw IndexError(__FILE__, typeid(*this).name(), __LINE__, "Неверный индекс строки");
+
+    this->_cols = cols;
+    this->_rows = size_rows / cols;
+    this->_matrix_alloc(this->_rows, this->_cols);
+
+    size_t i = 0;
+    size_t j = 0;
+    
+    for (auto iter = begin; iter != end; iter++, j++)
+    {
+        this->_data[i][j] = *iter;
+
+        if (j % this->_cols == 0)
+            i++;
+    }
+}
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <MatrixType T>
