@@ -35,7 +35,7 @@ public:
     using const_pointer = typename const_iterator::pointer;
 
     // различные конструкторы класса Matrix
-    Matrix() = default;
+    // Matrix() = default;
     explicit Matrix(const size_t rows = 0, const size_t cols = 0);
     explicit Matrix(const Matrix<T> &matrix); // конструктор копирования
     Matrix(Matrix<T> &&matrix) noexcept;      // конструктор перемещения
@@ -81,113 +81,118 @@ public:
 
     // математические операции с матрицами
     template <MatrixType T2>
-    decltype(auto) operator+(const Matrix<T2> &matrix) const;
+        requires MatrixSum<T, T2>
+    Matrix<T> operator+(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) operator+(const T2 &elem) const noexcept;
+    decltype(auto) operator+(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixSum<T, T2>
     Matrix<T> &operator+=(const Matrix<T2> &matrix);
     template <MatrixType T2>
         requires MatrixSum<T, T2>
-    Matrix<T> &operator+=(const T2 &elem) noexcept;
+    Matrix<T> &operator+=(const T2 &elem);
 
     template <MatrixType T2>
     decltype(auto) add_matrix(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) add_elem(const T2 &elem) const noexcept;
+    decltype(auto) add_elem(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixSum<T, T2>
     Matrix<T> &add_eq_matrix(const Matrix<T2> &matrix);
     template <MatrixType T2>
         requires MatrixSum<T, T2>
-    Matrix<T> &add_eq_elem(const T2 &elem) noexcept;
+    Matrix<T> &add_eq_elem(const T2 &elem);
 
     template <MatrixType T2>
     decltype(auto) operator-(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) operator-(const T2 &elem) const noexcept;
+    decltype(auto) operator-(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixSub<T, T2>
     Matrix<T> &operator-=(const Matrix<T2> &matrix);
     template <MatrixType T2>
         requires MatrixSub<T, T2>
-    Matrix<T> &operator-=(const T2 &elem) noexcept;
+    Matrix<T> &operator-=(const T2 &elem);
 
     template <MatrixType T2>
     decltype(auto) sub_matrix(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) sub_elem(const T2 &elem) const noexcept;
+    decltype(auto) sub_elem(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixSub<T, T2>
     Matrix<T> &sub_eq_matrix(const Matrix<T2> &matrix);
     template <MatrixType T2>
         requires MatrixSub<T, T2>
-    Matrix<T> &sub_eq_elem(const T2 &elem) noexcept;
+    Matrix<T> &sub_eq_elem(const T2 &elem);
 
     template <MatrixType T2>
     decltype(auto) operator*(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) operator*(const T2 &elem) const noexcept;
+    decltype(auto) operator*(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixMul<T, T2>
     Matrix<T> &operator*=(const Matrix<T2> &matrix);
     template <MatrixType T2>
         requires MatrixMul<T, T2>
-    Matrix<T> &operator*=(const T2 &elem) noexcept;
+    Matrix<T> &operator*=(const T2 &elem);
 
     template <MatrixType T2>
     decltype(auto) mul_matrix(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) mul_elem(const T2 &elem) const noexcept;
+    decltype(auto) mul_elem(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixMul<T, T2>
     Matrix<T> &mul_eq_matrix(const Matrix<T2> &matrix);
     template <MatrixType T2>
         requires MatrixMul<T, T2>
-    Matrix<T> &mul_eq_elem(const T2 &elem) noexcept;
+    Matrix<T> &mul_eq_elem(const T2 &elem);
 
     template <MatrixType T2>
     decltype(auto) operator/(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) operator/(const T2 &elem) const noexcept;
+    decltype(auto) operator/(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixDiv<T, T2>
     Matrix<T> &operator/=(const Matrix<T2> &matrix);
     template <MatrixType T2>
         requires MatrixDiv<T, T2>
-    Matrix<T> &operator/=(const T2 &elem) noexcept;
+    Matrix<T> &operator/=(const T2 &elem);
 
     template <MatrixType T2>
     decltype(auto) div_matrix(const Matrix<T2> &matrix) const;
     template <MatrixType T2>
-    decltype(auto) div_elem(const T2 &elem) const noexcept;
+    decltype(auto) div_elem(const T2 &elem) const;
     template <MatrixType T2>
         requires MatrixDiv<T, T2>
     Matrix<T> &div_eq_matrix(const Matrix<T2> &matrix);
     template <MatrixType T2>
         requires MatrixDiv<T, T2>
-    Matrix<T> &div_eq_elem(const T2 &elem) noexcept;
+    Matrix<T> &div_eq_elem(const T2 &elem);
 
     template <MatrixType T2>
-    friend decltype(auto) operator+(const T2 &elem, const Matrix<T> &matrix)
+        requires MatrixSum<T, T2>
+    friend Matrix<T> operator+(const T2 &elem, const Matrix<T> &matrix)
     {
         return matrix + elem;
     }
 
     template <MatrixType T2>
-    friend decltype(auto) operator-(const T2 &elem, const Matrix<T> &matrix)
+        requires MatrixSub<T, T2>
+    friend Matrix<T> operator-(const T2 &elem, const Matrix<T> &matrix)
     {
         return matrix - elem;
     }
 
     template <MatrixType T2>
-    friend decltype(auto) operator*(const T2 &elem, const Matrix<T> &matrix)
+        requires MatrixMul<T, T2>
+    friend Matrix<T> operator*(const T2 &elem, const Matrix<T> &matrix)
     {
         return matrix * elem;
     }
 
     template <MatrixType T2>
-    friend decltype(auto) operator/(const T2 &elem, const Matrix<T> &matrix)
+        requires MatrixDiv<T, T2>
+    friend Matrix<T> operator/(const T2 &elem, const Matrix<T> &matrix)
     {
         Matrix tmp(matrix);
 
@@ -362,12 +367,18 @@ Matrix<T>::Matrix(const Matrix<T2> &matrix)
 template <MatrixType T>
 Matrix<T>::MatrixRow Matrix<T>::operator[](const size_t row)
 {
+    if (row >= get_rows())
+        throw IndexError(__FILE__, typeid(*this).name(), __LINE__, "Неверный индекс строки");
+
     return _data[row];
 }
 
 template <MatrixType T>
 const Matrix<T>::MatrixRow Matrix<T>::operator[](const size_t row) const
 {
+    if (row >= get_rows())
+        throw IndexError(__FILE__, typeid(*this).name(), __LINE__, "Неверный индекс строки");
+
     return _data[row];
 }
 
@@ -544,11 +555,12 @@ Matrix<T> &Matrix<T>::operator=(std::initializer_list<std::initializer_list<T>> 
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator+(const Matrix<T2> &matrix) const
+    requires MatrixSum<T, T2>
+Matrix<T> Matrix<T>::operator+(const Matrix<T2> &matrix) const
 {
     _check_sizes(matrix);
 
-    Matrix<decltype((*this)[0][0] + matrix[0][0])> tmp(_rows, _cols);
+    Matrix<T> tmp(_rows, _cols);
 
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
@@ -559,7 +571,7 @@ decltype(auto) Matrix<T>::operator+(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator+(const T2 &elem) const noexcept
+decltype(auto) Matrix<T>::operator+(const T2 &elem) const
 {
     Matrix<decltype((*this)[0][0] + elem)> tmp(_rows, _cols);
 
@@ -587,7 +599,7 @@ Matrix<T> &Matrix<T>::operator+=(const Matrix<T2> &matrix)
 template <MatrixType T>
 template <MatrixType T2>
     requires MatrixSum<T, T2>
-Matrix<T> &Matrix<T>::operator+=(const T2 &elem) noexcept
+Matrix<T> &Matrix<T>::operator+=(const T2 &elem)
 {
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
@@ -605,7 +617,7 @@ decltype(auto) Matrix<T>::add_matrix(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::add_elem(const T2 &elem) const noexcept
+decltype(auto) Matrix<T>::add_elem(const T2 &elem) const
 {
     return operator+(elem);
 }
@@ -621,7 +633,7 @@ Matrix<T> &Matrix<T>::add_eq_matrix(const Matrix<T2> &matrix)
 template <MatrixType T>
 template <MatrixType T2>
     requires MatrixSum<T, T2>
-Matrix<T> &Matrix<T>::add_eq_elem(const T2 &elem) noexcept
+Matrix<T> &Matrix<T>::add_eq_elem(const T2 &elem)
 {
     return operator+=(elem);
 }
@@ -645,7 +657,7 @@ decltype(auto) Matrix<T>::operator-(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator-(const T2 &elem) const noexcept
+decltype(auto) Matrix<T>::operator-(const T2 &elem) const
 {
     Matrix<decltype((*this)[0][0] - elem)> tmp(_rows, _cols);
 
@@ -673,7 +685,7 @@ Matrix<T> &Matrix<T>::operator-=(const Matrix<T2> &matrix)
 template <MatrixType T>
 template <MatrixType T2>
     requires MatrixSub<T, T2>
-Matrix<T> &Matrix<T>::operator-=(const T2 &elem) noexcept
+Matrix<T> &Matrix<T>::operator-=(const T2 &elem)
 {
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
@@ -691,7 +703,7 @@ decltype(auto) Matrix<T>::sub_matrix(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::sub_elem(const T2 &elem) const noexcept
+decltype(auto) Matrix<T>::sub_elem(const T2 &elem) const
 {
     return operator-(elem);
 }
@@ -707,7 +719,7 @@ Matrix<T> &Matrix<T>::sub_eq_matrix(const Matrix<T2> &matrix)
 template <MatrixType T>
 template <MatrixType T2>
     requires MatrixSub<T, T2>
-Matrix<T> &Matrix<T>::sub_eq_elem(const T2 &elem) noexcept
+Matrix<T> &Matrix<T>::sub_eq_elem(const T2 &elem)
 {
     return operator-=(elem);
 }
@@ -732,7 +744,7 @@ decltype(auto) Matrix<T>::operator*(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator*(const T2 &elem) const noexcept
+decltype(auto) Matrix<T>::operator*(const T2 &elem) const
 {
     Matrix<decltype((*this)[0][0] * elem)> tmp(_rows, _cols);
 
@@ -765,7 +777,7 @@ Matrix<T> &Matrix<T>::operator*=(const Matrix<T2> &matrix)
 template <MatrixType T>
 template <MatrixType T2>
     requires MatrixMul<T, T2>
-Matrix<T> &Matrix<T>::operator*=(const T2 &elem) noexcept
+Matrix<T> &Matrix<T>::operator*=(const T2 &elem)
 {
     for (size_t i = 0; i < _rows; ++i)
         for (size_t j = 0; j < _cols; ++j)
@@ -783,7 +795,7 @@ decltype(auto) Matrix<T>::mul_matrix(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::mul_elem(const T2 &elem) const noexcept
+decltype(auto) Matrix<T>::mul_elem(const T2 &elem) const
 {
     return operator*(elem);
 }
@@ -799,7 +811,7 @@ Matrix<T> &Matrix<T>::mul_eq_matrix(const Matrix<T2> &matrix)
 template <MatrixType T>
 template <MatrixType T2>
     requires MatrixMul<T, T2>
-Matrix<T> &Matrix<T>::mul_eq_elem(const T2 &elem) noexcept
+Matrix<T> &Matrix<T>::mul_eq_elem(const T2 &elem)
 {
     return operator*=(elem);
 }
@@ -817,7 +829,7 @@ decltype(auto) Matrix<T>::operator/(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::operator/(const T2 &elem) const noexcept
+decltype(auto) Matrix<T>::operator/(const T2 &elem) const
 {
     if (elem == 0)
         throw InvalidArgument(__FILE__, typeid(*this).name(), __LINE__, "Нулевой делитель");
@@ -846,7 +858,7 @@ Matrix<T> &Matrix<T>::operator/=(const Matrix<T2> &matrix)
 template <MatrixType T>
 template <MatrixType T2>
     requires MatrixDiv<T, T2>
-Matrix<T> &Matrix<T>::operator/=(const T2 &elem) noexcept
+Matrix<T> &Matrix<T>::operator/=(const T2 &elem)
 {
     if (elem == 0)
         throw InvalidArgument(__FILE__, typeid(*this).name(), __LINE__, "Нулевой делитель");
@@ -867,7 +879,7 @@ decltype(auto) Matrix<T>::div_matrix(const Matrix<T2> &matrix) const
 
 template <MatrixType T>
 template <MatrixType T2>
-decltype(auto) Matrix<T>::div_elem(const T2 &elem) const noexcept
+decltype(auto) Matrix<T>::div_elem(const T2 &elem) const
 {
     return operator/(elem);
 }
@@ -883,7 +895,7 @@ Matrix<T> &Matrix<T>::div_eq_matrix(const Matrix<T2> &matrix)
 template <MatrixType T>
 template <MatrixType T2>
     requires MatrixDiv<T, T2>
-Matrix<T> &Matrix<T>::div_eq_elem(const T2 &elem) noexcept
+Matrix<T> &Matrix<T>::div_eq_elem(const T2 &elem)
 {
     return operator/=(elem);
 }
@@ -907,26 +919,6 @@ Matrix<T> Matrix<T>::neg()
 {
     return operator-();
 }
-
-// ///////////////////////////////////////////////////////////////////////////////////////////////////
-
-// template <MatrixType T>
-// Matrix<T> operator+(const T &elem, const Matrix<T> &matrix)
-// {
-//     return matrix + elem;
-// }
-
-// template <MatrixType T>
-// Matrix<T> operator-(const T &elem, const Matrix<T> &matrix)
-// {
-//     return matrix - elem;
-// }
-
-// template <MatrixType T>
-// Matrix<T> operator*(const T &elem, const Matrix<T> &matrix)
-// {
-//     return matrix * elem;
-// }
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1195,7 +1187,9 @@ template <MatrixType T>
 // получение элемента строки через индексацию
 T &Matrix<T>::MatrixRow::operator[](const size_t index)
 {
-    // позже добавить проверкку индекса
+    if (index >= _size_row)
+        throw IndexError(__FILE__, typeid(*this).name(), __LINE__, "Неверный индекс столбца");
+
     return _data_row[index];
 }
 
@@ -1203,7 +1197,9 @@ template <MatrixType T>
 // получение элемента строки через индексацию (константное)
 const T &Matrix<T>::MatrixRow::operator[](const size_t index) const
 {
-    // позже добавить проверкку индекса
+    if (index >= _size_row)
+        throw IndexError(__FILE__, typeid(*this).name(), __LINE__, "Неверный индекс столбца");
+
     return _data_row[index];
 }
 
