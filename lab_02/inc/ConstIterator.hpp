@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "Concepts.hpp"
+#include "Iterator.hpp"
 #include "MatrixExceptions.hpp"
 
 using string = std::string;
@@ -28,6 +29,14 @@ public:
     ConstIterator(const Matrix<T> &matrix, const size_t index = 0); // конструктор итератора
     ConstIterator(const ConstIterator &it) = default;               // конструктор копирования
     ConstIterator(ConstIterator &&it) noexcept = default;           // конструктор перемещения
+    ConstIterator(const Iterator<T> &other) noexcept
+        : ConstIterator(other._data_iter, other._index)
+    {
+    }
+    ConstIterator(Iterator<T> &&other) noexcept
+        : ConstIterator(other._data_iter, other._index)
+    {
+    }
 
     ~ConstIterator() noexcept = default; // деструктор дефолтный
 
