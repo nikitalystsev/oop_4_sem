@@ -25,7 +25,7 @@ public:
     using value_type = T;
     using size_type = size_t;
     using iterator = Iterator<T>;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = typename iterator::difference_type;
     using const_iterator = ConstIterator<T>;
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
@@ -404,7 +404,7 @@ Matrix<T>::Matrix(const Iter begin, const Iter_e end, const size_t cols)
 
     size_t i = 0;
     size_t j = 0;
-    
+
     for (auto iter = begin; iter != end; iter++, j++)
     {
         this->_data[i][j] = *iter;
