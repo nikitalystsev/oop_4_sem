@@ -67,4 +67,14 @@ concept MatrixDiv = requires(T a, T2 b) {
     } -> std::convertible_to<T>;
 };
 
+template <typename T, typename U>
+concept PermittedContainer = requires(U &u) {
+    {
+        u.get_rows()
+    } noexcept -> std::same_as<typename T::size_type>;
+    {
+        u.get_cols()
+    } noexcept -> std::same_as<typename T::size_type>;
+};
+
 #endif // __CONCEPTS_H__

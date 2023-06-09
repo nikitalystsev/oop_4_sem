@@ -48,6 +48,10 @@ public:
     explicit Matrix(const Matrix<T2> &matrix)
         requires PermittedType<T, T2>;
 
+    template <typename Container>
+        requires PermittedContainer<T, Container>
+    explicit Matrix(const Container &matrix);
+
     ~Matrix() noexcept = default; // деструктор класса по умолчанию
 
     MatrixRow operator[](const size_t row);             // методы, возвращающие строку матрицы
@@ -364,6 +368,19 @@ Matrix<T>::Matrix(const Matrix<T2> &matrix)
         for (size_t j = 0; j < _cols; ++j)
             this->_data[i][j] = matrix[i][j];
 }
+
+template <MatrixType T>
+template <typename Container>
+    requires PermittedContainer<T, Container>
+Matrix<T>::Matrix(const Container &container) : MatrixBase(container.get_rows(), container.get_cols())
+{
+    this->_matrix_alloc(container.get_rows(), container.get_cols());
+
+    for (size_t i = 0; i < _rows; ++i)
+        for (size_t j = 0; j < _cols; ++j)
+            this->_data[i][j] = container[i][j];
+}
+
 // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <MatrixType T>
