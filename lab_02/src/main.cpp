@@ -112,27 +112,27 @@ int main()
         std::cerr << err.what() << "\n\n";
     }
 
-    // size_t row = 2, col = 3;
-    // std::cout << "Конструктор с двумя числами типа size_t:\n";
-    // Matrix<int> my_matrix(row, col, 4);
-    // std::cout << my_matrix << "\n\n";
+    size_t row = 2, col = 3;
+    std::cout << "Конструктор с двумя числами типа size_t:\n";
+    Matrix<int> my_matrix(row, col, 4);
+    std::cout << my_matrix << "\n\n";
 
-    // const size_t a = 2;
-    // const size_t b = 2;
-    // // const size_t c = 3;
+    const size_t a = 2;
+    const size_t b = 2;
+    // const size_t c = 3;
 
-    // std::cout << "Проверка конструктора для списка инициализации:\n";
-    // Matrix<int> my_matrix3(a, b);
-    // // std::cout << my_matrix3 << "\n\n";
-    // Matrix<int> my_matrix4({{1, 2, 3},
-    //                         {4, 5, 6}});
-    // std::cout << "Проверка булевых операторов == и !=:\n";
-    // if (my_matrix4 != my_matrix3)
-    //     std::cout << "матрицы не равны"
-    //               << "\n\n";
-    // else
-    //     std::cout << "матрицы равны"
-    //               << "\n\n";
+    std::cout << "Проверка конструктора для списка инициализации:\n";
+    Matrix<int> my_matrix3(a, b);
+    // std::cout << my_matrix3 << "\n\n";
+    Matrix<int> my_matrix4({{1, 2, 3},
+                            {4, 5, 6}});
+    std::cout << "Проверка булевых операторов == и !=:\n";
+    if (my_matrix4 != my_matrix3)
+        std::cout << "матрицы не равны"
+                  << "\n\n";
+    else
+        std::cout << "матрицы равны"
+                  << "\n\n";
 
     std::cout << "Получение элемента матрицы:\n\n";
     Matrix<string> matrix11 = {{"a1", "a2", "a3"},
