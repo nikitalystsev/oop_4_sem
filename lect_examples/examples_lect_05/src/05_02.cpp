@@ -1,4 +1,5 @@
 // Пример 05.02. Создание и уничтожение объектов.
+
 #include <iostream>
 
 using namespace std;
@@ -9,13 +10,29 @@ private:
     int value = 1;
 
 public:
-    A() { value *= 2; }
-    A(const A &) { value *= 3; }
-    A(A &&) noexcept { value *= 4; }
+    A()
+    {
+        cout << "создание" << endl;
+        value *= 2;
+    }
+    A(const A &)
+    {
+        cout << "копирование" << endl;
+        value *= 3;
+    }
+    A(A &&) noexcept
+    {
+        cout << "перенос" << endl;
+        value *= 4;
+    }
     ~A() { cout << value << endl; }
 };
 
-A f(A obj) { return obj; }
+A f(A obj)
+{
+    cout << "функция f" << endl;
+    return obj;
+}
 
 A f1() { return A(); }
 
