@@ -10,7 +10,9 @@ int main()
     int &&rv2 = move(i);
     int &&rv3 = (int)i;
 
-    ++i;
+    // ++i;
+    ++rv3;
+    cout << "i = " << i << endl;
 
     int &&rv4 = 5;
     ++rv4;

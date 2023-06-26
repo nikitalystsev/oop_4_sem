@@ -1,6 +1,8 @@
 // Пример 03.04. Перегрузка функций.
 #include <iostream>
 
+// https://habr.com/ru/articles/487920/ про перегрузку
+
 using namespace std;
 
 void func1(int &x) { cout << "func1(int&)" << endl; }
