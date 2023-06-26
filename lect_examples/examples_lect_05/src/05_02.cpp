@@ -34,11 +34,17 @@ A f(A obj)
     return obj;
 }
 
-A f1() { return A(); }
+A f1()
+{
+    cout << "функция f1" << endl;
+    return A();
+}
 
 A f2()
 {
     A obj;
+
+    cout << "функция f2" << endl;
 
     return obj;
 }

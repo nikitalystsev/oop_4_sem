@@ -50,6 +50,7 @@ Array::~Array()
 
 bool Array::equals(Array ar)
 {
+    cout << "сравнение" << endl;
     if (count != ar.count)
         return false;
 
@@ -64,7 +65,7 @@ Array Array::minus(const Array &ar)
 {
     cout << "минус" << endl;
     Array temp(ar);
-    
+
     for (int i = 0; i < temp.count; ++i)
         temp.arr[i] *= -1;
 
@@ -74,7 +75,8 @@ Array Array::minus(const Array &ar)
 int main()
 {
     Array mas{10};
-
+    // Array mas2 = Array::minus(mas);
+    
     if (mas.equals(Array::minus(mas)))
     {
         cout << "true" << endl;

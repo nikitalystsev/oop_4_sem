@@ -11,7 +11,9 @@ private:
     mutable int b;
 
 public:
-    //    A() : a(1), b(1) {}
+    // A() : a(1), b(1) {}
+    // A(const A &a) { cout << "конструктор копирования" << endl; }
+    // A(A &&a) { cout << "конструктор переноса" << endl; }
     int f() &
     {
         cout << "int()&" << endl;
@@ -34,6 +36,7 @@ public:
 
 A func(const A &obj)
 {
+    cout << "вызов функции func" << endl;
     return obj;
 }
 
